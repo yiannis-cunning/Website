@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>x86 Execution Environment</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <style>
+            body {background-color:#ffffff;background-repeat:no-repeat;background-position:top left;background-attachment:fixed;font-family: "Lato", sans-serif;font-size: 12px;}
+            .text {font-size: 14px;}
+            h1{font-family:Arial, sans-serif;color:#000000;background-color:#ffffff;}
+            .group{display: inline-block; vertical-align: top;}
+            .reg_group {cursor: pointer; text-align: center; padding: 5px; width: 300px; background-color: #D5DDDF; border:2px solid #3c5148;font-size:14px; margin: 5px;display: inline-block; vertical-align: top;}
+            .register {
+                cursor: pointer;
+                text-align: center;
+                width: 100%;
+                padding: 4px;
+                border:2px solid #1B2727;
+                background-color: #6b8e4e;
+                font-size: 14px;
+                margin: 0px;
+                margin-top: 3px;
+                margin-bottom: 3px;
+                margin-left: 0px;
+                margin-right: 0px;
+                display: inline-block;
+                box-sizing: border-box;}
+        </style>
+    </head>
+
+
+
+
+    <body>
+        <div class="group">
+            <div class="reg_group">
+                <div class = "h1">  General Purpose Registers - 16x 64 bits </div>
+                <div class="register">rax / eax / ax / ah / al</div> <br>
+                <div class="register">rbx / ebx / bx / bh / bl</div> <br>
+                <div class="register">rcx / ecx / cx / ch / cl</div> <br>
+                <div class="register">rdx / edx / dx / dh / dl</div> <br>
+
+                <div class="register">rsi / esi / si</div> <br>
+                <div class="register">rdi / edi / di</div> <br>
+                <div class="register">rsp / esp / sp</div> <br>
+                <div class="register">rbp / ebp / ep</div> <br>
+
+                <div class="register">r8</div> <br>
+                <div class="register">r9</div> <br>
+                <div class="register">r10</div> <br>
+                <div class="register">r11</div> <br>
+                <div class="register">r12</div> <br>
+                <div class="register">r13</div> <br>
+                <div class="register">r14</div> <br>
+                <div class="register">r15</div> <br>
+            </div>
+            <div class="group">
+                <div class="reg_group" style="width:300px">
+                    <div class = "h1"> Global table registers 2x<br> x86: 48 bits, x64: 80 bits</div>
+                    <div class="register">GDTR</div> <br>
+                    <div class="register">LTDR</div> <br>
+                </div><br>
+                <div class="reg_group" style="width:240px">
+                    <div class = "h1"> Segment registers - 4x 16 bits</div>
+                    <div class="register">CS</div> <br>
+                    <div class="register">DS</div> <br>
+                    <div class="register">SS</div> <br>
+                    <div class="register">ES</div> <br>
+                    <div class="register">FS</div> <br>
+                    <div class="register">GS</div> <br>
+                </div>
+            </div>
+        </div>
+
+
+
+
+
+        <h1>General Purpose Registers</h1>
+        <div class="text">
+                More than one name can refer to the same physical register. So many different opperations can change differnt parts of the register.
+                Also there is no way to refer to the lower bits alone of some registers, like R8-r15.
+                <ul>
+                    <li>rax -> rbp -> r13 refer to the whole 64 bits of the register</li>
+                    <li>eax -> ebp refer to only the lower 32 bits of the register</li>
+                    <li>ax -> ep refer to the lower 16 bits of the register</li>
+                    <li>al -> dl refer to the lower 8 bits of the register</li>
+                    <li>ah -> dh refer to the bits 16 to 8 of the register</li>
+                </ul> 
+        </div>
+        <h1>Segment Registers</h1>
+        <div class="text">
+            These registers are used for address translations. At one time the CPU can have 6 different segments. The CS, code segment, is used for code addresses.
+            The DS, data segment, is used for data. The SS, stack segment, can be used for the stack. And the rest can be used for any other data segments you want.
+
+            The registers themselves hold a index to a segment table in memeory with more details of the address translation. There is a global descriptor table (GDT)
+            and a local descriptor table (LDT) whose base address is stored in the GDT register (GDTR) and LDT register (LDTR).
+
+            <ul>
+                <li>bits 15 - 3 are index into the table</li>
+                <li>bit 2 is GDT (0) or LDT (1)</li>
+                <li>bit 1 and 0 are the requested privilege level</li>
+            </ul> 
+            (Vol. 3a, Chp 3.4)
+        </div>
+    </body>
+</html>

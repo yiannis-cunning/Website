@@ -1,0 +1,119 @@
+What is git?
+
+ - recording changes to file or set of files.
+ - Allowes to revery selected files to previous state
+ - See who modified somthing that has become a problem
+
+
+ - Most basic is just have timestamped folders
+ - Instead can have a database that for a given file has a series of versions
+ - These differnces between versions are kept as differences between the two
+
+ - Also have the problem of wanting to 1) work with other developers and 2) work from different computers
+ - Might want to try and use centralized version control -> one main server
+ - Just contains all files with all their sequencial versions
+    - Could ask to take out version x, or upload a file to latest version
+
+
+ - Git just copies this server copy of versions to all the clients that use it
+   - Each user will clone the entire database (including all files and all versions of the file)
+   - Every clone is a full backup of the data
+   - Could set up heiarchical models
+
+
+ - Normal version control software, as discussed before, might have some amount of files in a project and for each version of the projects the delta of the file is recorded, so if you want the nth version of the file you could start with the base and add the changes you see.
+
+ - Git will take a snapshot of the project at every version. Any changes will be recorded. So if you want the latest version/snapshot, you might start at the first version and add on the snapshots.
+
+
+ - Git will only add data to the database. You can start with the base files 1 - n, and then push changes that will add to each file in the form of snapshots. So each snapshot of the verison will come with added some amount of lines, delete some amount of lines. Basically it will be a list of steps in getting to the nth version from the base
+
+Three states of Git:
+  - Modified, Staged, Commited
+  - Modified means you have modified a certain file within the project but have not commmited to the database witch might be within the computer or on a server
+    - Starting from a base version with a bunch of snapshots in the git project you start to work on some files each of them modified on the local machine, but if someone was to take the git file and get the project from it they would not see these changes
+  - Staged means you have marked a modified file in its current version to be part of the next commit snapshot
+    - Now that you have some modified files you can stage them up so that they will be includeed in the next commit. Just a mark on certain files, you can keep working and make more changes and mark more files. only when you commit will the changes from the privious to your new version be put into the git project. any modified but not staged files will not be uploaded.
+  - Commited data will be stored in the database
+    - You have your copy of the database, You make changes to a bunch of files, you set up some files to be commited, you commit those files in a snapshot to the database. the snapshot will contain the difference between the previous snapshot. What if you change some files but dont commit them with the rest of the files you changed. Your version would then be different than the database version. Mabey you can stage those next and make another commit.
+
+
+A git database will need to take up storage.
+  - There is a working tree, staging area, and the repository
+  1) Wokring tree will be the checked out version of the project. Might be all files within a folder. You have just made a clone of the git repository.
+  2) staging area will be the area where all staged files live. Might just be the names of all the files that you will want to commit back to the main repository. These might incude changes from the previous version of the staged files.
+  3) Git directory is where the meat of the database is. This is what is copied when you clone to your computer.
+
+ - So you might 1) get the .git directory from wherever witch will contrain all the innformation to create a version of the project. You can then have your working directory with a copy of the latest version of the project. You then will change any of the files in the project wich you then will stage the ones you want and finally commit back to the git repository in the way of a new snapshot
+
+
+Making a git repository.
+ - could a) take a local directory and make it a repository -> includes all files within the directory.
+ - could b) clone a repository from somwhere else.
+
+
+ a) done with "git init" in the project directory
+    - initialiy nothing in the project will be tracked
+    - Start adding files with "git add *.*"
+    - Then do "Git commit -m "verion info" "
+
+ b) done with "git clone" -> not checkout. this will get all version history
+    - ex "git clone url"
+    - will create the directory and inints a .git inside (can change defualt name of dir with a arguement)
+    - protocol of the url is specified by the prefex. https:// is the protocol -> might be to github.com/..extensions or might be git:// witch has its own protocol or mgiht be user@server:path witch is for ssh
+
+Recording changes to the repository
+  - each time the project reaches a state you want to record you will want to make a new snapshot of the project and commit it
+  - each file in the directory can be either tracked or untracked
+    - tracked means they were present in the last snapshot or newly staged files
+    - tracked is just any file git knows about
+      - might be staged, modified or unmodified
+  - After cloning a repository all files will be tracked and unmodified.
+    - You might start edditing and git will see them as modified. (changed scince last commit)
+
+- Untracked goes to staged when you add the file.
+- unmodified goes to modified when you modify the file
+- unmodified goes to untracked when you remove the file
+- staged goes to unmodified after a commit
+- modified goes to staged when you add
+
+Use "git status" to see what files are in what stage
+  - will be clean when none of your tracked files are modified
+    - Might show what you have to commit or whats added.
+  - Will also show you what branch you are on. will show if you have diverged from the server branch Mabey. branch might be master/main - defualt
+  - Will also list all untracked files within the directory
+
+Turn a untracked file into a tracked file with "git add"
+  - turns the untracked file into a tobecommited file/staged file
+  - will be listed as a 'new file' under status
+  - Git add will add the current version of the file
+  - if you list a directory all the files within the directory will be added
+
+- modified files that are tracked can be staged with git add.
+  - if you make changes to a file that is staged it will both be modified in the stage and modified not being commited
+
+Shorter 'Git status' with 'git status -s'
+  - new untracked files are ??
+  - new files being added in the stage are A, modified is a M
+  - Left hand colum of letters is in the stageing area and right hand column is working tree. modified and in staging area, modified and in working tree
+
+
+Use gitignore to ingnore certain file types
+  - bunch of rules and syntax for seting up files to ignore
+
+Use git diff to look at what is staged to be commited and what is modifed that is not staged -> also can view the actual cahnges
+
+- Every commit makes a new snapshot that you can revery back too
+- use "git rm" to remove a file from being tracked. and then commit. also will remove the file from you working directory.
+- So you can delete the file -> it goes to not staged for commit
+- then you can use git rm to stage the removal -> will be gone on next commit.
+
+ - You can remove the file from the stage but keep it in the local folder.
+
+
+
+
+
+Moving files with git:
+ - You can use git mv file_from file_to
+ - kida like removing it from one location and adding it to another

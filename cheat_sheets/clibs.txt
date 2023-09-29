@@ -1,0 +1,12 @@
+##### open(), close(), read(), write()
+
+int fd = open(filename, mode) [#include <fcntl.h>]
+
+int ret = read(fd, buffer, bytes) [#include <unistd.h>]
+// ret > 0: bytes read
+// ret == 0: file ended
+// ret < 0: error
+
+int ret = write(fd2, buffer, bytes) 
+
+
