@@ -23,7 +23,6 @@
 
 #define max_read 4096;
 
-
 static int fd;
 
 
@@ -49,18 +48,14 @@ void handle_signal(int signum) {
 
 void register_signal(int signum) {
   void (*sig_ret)(int) = signal(signum, handle_signal);
-  if (sig_ret == SIG_ERR) {
-    int err = errno;
-    perror("signal");
-    exit(err);
-  }
+  passert(sig_ret != SIG_ERR, "Error setting up signal handelrs");
 }
 
 
-void parse_text_to_html(char *filename){
-  f = open(filename, O_RDONLY);
-  
-}
+//void parse_text_to_html(char *filename){
+//  f = open(filename, O_RDONLY);
+//  
+//}
 
 
 
@@ -69,9 +64,12 @@ void parse_text_to_html(char *filename){
 
 int main(){
 
+    printf("Starting server ... \n");
+    
     register_signal(SIGINT);
     register_signal(SIGTERM);
 
+    
     int client;
     struct sockaddr_in sockaddr = {0};
     struct sockaddr addr_client = {0};
@@ -80,7 +78,7 @@ int main(){
     int n;
 
 
-
+  
     // Make the socket
     fd = socket(AF_INET, SOCK_STREAM, 0);
     passert(fd != -1, "Error getting socket!");
@@ -101,29 +99,34 @@ int main(){
 
 
 
-    int home_fd = open("Home.html", O_RDONLY);
+    int home_fd = open("/home/yiannis/Desktop/Website/src/Home.html", O_RDONLY);
     char *hdr = "HTTP/1.1 200 OK\nContent-Type: text/html; charset=utf-8\nConnection: Keep-Alive\n\n";
     int hdr_len = strlen(hdr);
 
+    printf(" **** init done - waiting for clients to connect\n");
+  
     // Accept loop
     while(1){
         client = accept(fd, &addr_client, &addr_client_len);
         if(client == -1){
-            printf("Error accepting client!");
+            printf("Error accepting client!\n");
             continue;
         }
+        printf(" **** Accepted client \n");
 
         // Read what they have to say
         n = read(client, buffer, 4096);
 
         // Write the header first
         write(client, hdr, hdr_len);
+        printf(" **** Response set back to client \n");
         
         // Write the rest
         lseek(home_fd, 0, SEEK_SET);
         n = read(home_fd, buffer, 4096);
         while(n > 0){
             write(client, buffer, n);
+            write(1, buffer, n);
             n = read(home_fd, buffer, 4096);
         }
         
@@ -134,8 +137,8 @@ int main(){
 
 
 
-    char *response = "HTTP/1.1 200 OK\nContent-Type: text/html; charset=utf-8\nConnection: Keep-Alive\n\n<!DOCTYPE html>\n<head>\n    Fuck you. \n</head>\n\n</html>\n";
-
+    char *response = "HTTP/1.1 200 OK\nContent-Type: text/html; charset=utf-8\nConnection: Keep-Alive\n\n<!DOCTYPE html>\n<head>\n Content \n</head>\n\n</html>\n";
+  
 }
 
 //Transfer-Encoding: chunked
