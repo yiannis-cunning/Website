@@ -19,13 +19,14 @@
 #include <sys/socket.h>
 #include <sys/un.h>
 #include <unistd.h>
-#include <pthreads.h>
 
 
 #define max_read 4096;
 
 static int fd;
-
+static struct sockaddr_in sockaddr = {0};
+static struct sockaddr client_address = {0};
+static socklen_t client_address_len = {0};
 
 void passert(bool cond, char *str){
     if(cond == false){
@@ -58,29 +59,9 @@ void register_signal(int signum) {
 //  
 //}
 
-
-
-
-
-
-int main(){
-
-    printf("Starting server ... \n");
+void setup_socket(){
     
-    register_signal(SIGINT);
-    register_signal(SIGTERM);
-
-    
-    int client;
-    struct sockaddr_in sockaddr = {0};
-    struct sockaddr addr_client = {0};
-    socklen_t addr_client_len = {0};
-    char buffer[4096];
-    int n;
-
-
-  
-    // Make the socket
+	// Make the socket
     fd = socket(AF_INET, SOCK_STREAM, 0);
     passert(fd != -1, "Error getting socket!");
 
@@ -96,6 +77,25 @@ int main(){
 
     // Set up with kernel
     passert(listen(fd, 0) != -1, "Error setting up queue in kernel!");
+}
+
+
+
+
+int main(){
+
+    printf("Starting server ... \n");
+    register_signal(SIGINT);
+    register_signal(SIGTERM);
+
+    int client;
+    char buffer[4096];
+    int n;
+
+	// sets up socket to file descriptor 'fd'
+	setup_socket();
+
+  
 
 
 
@@ -108,7 +108,7 @@ int main(){
   
     // Accept loop
     while(1){
-        client = accept(fd, &addr_client, &addr_client_len);
+        client = accept(fd, &client_address, &client_address_len);
         if(client == -1){
             printf("Error accepting client!\n");
             continue;
