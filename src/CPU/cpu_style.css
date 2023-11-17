@@ -1,0 +1,42 @@
+
+
+body {
+    background-color:#cabfbf;
+    background-repeat:no-repeat;
+    background-position:top left;
+    background-attachment:fixed;
+
+    font-family: "Lato", sans-serif;
+    font-size: 12px;
+}
+
+.group{display: inline-block; vertical-align: top;}
+
+.reg_group {
+    cursor: pointer;
+    text-align: center;
+    padding: 5px;
+    width: 300px;
+    background-color: #D5DDDF;
+    border:2px solid #3c5148;
+    font-size:14px;
+    margin: 5px;
+    display: inline-block;
+    vertical-align: top;
+}
+.register {
+    cursor: pointer;
+    text-align: center;
+    width: 100%;
+    padding: 4px;
+    border:2px solid #1B2727;
+    background-color: #6b8e4e;
+    font-size: 14px;
+    margin: 0px;
+    margin-top: 3px;
+    margin-bottom: 3px;
+    margin-left: 0px;
+    margin-right: 0px;
+    display: inline-block;
+    box-sizing: border-box;
+}

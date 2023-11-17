@@ -1,0 +1,19 @@
+
+HTML comments: enclosed with "<!--" and "-->"
+
+
+
+Document strucure:
+    - At the begging of the doc -> put "<!DOCTYPE html>" to declare the docuemnt type?
+    - Then all html code is enclosde in "<html> </html>"
+    - Then is spit up into 'body' and 'head'
+    - inside the head is where you can put the css classes
+        - you can use <link ... > to link a) javascrip or b)css
+        "<link rel="stylesheet" href="mystyle.css">"
+
+<meta> tag:
+    - give information to the browser on what this file is
+
+
+CSS classes
+    - declare a class with name {property: value; ...}

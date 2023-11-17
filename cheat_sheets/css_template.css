@@ -1,0 +1,36 @@
+
+/*Name of class -> things like 'h1' 'h2' 'body' can be just done like this: -> they are html object clases <h1>, <body?...*/
+h1 {
+    font-family: 'SmallCaps', sans-serif;
+    font-size: 12px;
+    font-weight: bold;
+    font-variant: small-caps;
+    text-align: center;
+    margin-top: 2px;
+    margin-bottom: 2px;
+    background-color: red;
+}
+
+
+/*custom css classes use the '.'*/
+.custom_class{
+    font-size:12px;
+}
+
+/* You can declare sub-classes depending on states of the object */
+.custom_class:hover{
+    font-size:24px; /* Font size will change when hovered over*/
+    transition: 0.5; /* You can also declare how long it should take to get to this stle from base*/
+}
+/*
+    hover : hovering over the element
+    active : currently holding click on it
+    focus : have it selected/clicked it 
+*/
+
+
+/* apply this class to all with the given 'id' */
+
+#idname2{
+    font-size: 12px;
+}

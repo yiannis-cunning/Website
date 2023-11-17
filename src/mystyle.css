@@ -1,0 +1,53 @@
+
+/* html element classes */
+h1 {
+    font-family: 'SmallCaps', sans-serif;
+    font-size: 24px;
+    font-weight: bold;
+    font-variant: small-caps;
+    text-align: center;
+    margin-top: 2px;
+    margin-bottom: 2px;
+    color: black;
+}
+
+
+.radio {
+    border: 1px solid black;
+    padding: 1px;
+    margin: 2px;
+    float: left;
+    width: max-content;
+}
+
+.main {
+    font-family: 'SmallCaps', sans-serif;
+    font-size: 12px;
+    font-weight: bold;
+    font-variant: small-caps;
+    color: black;
+}
+
+/* Custom clases */
+.button_css {
+    border: 1px solid black;
+    background-color: black;
+    color: red;
+    font-size: 15px;
+}
+
+.button_css:hover{
+    background-color:red;
+    color: black;
+    transition: 0.7s;
+}
+
+.button_css:focus{
+    outline-color: transparent;
+    outline-style:solid;
+    box-shadow: 0 0 0 4px #5a01a7;
+}
+
+.button_css:active{
+    background-color: #ffbf00;
+}
