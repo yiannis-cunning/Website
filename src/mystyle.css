@@ -11,6 +11,12 @@ h1 {
     color: black;
 }
 
+.normal_font {
+    font-family: "Times New Roman", Times, serif;
+    font-size: 12px;
+    color: black;
+}
+
 
 .radio {
     border: 1px solid black;
@@ -18,13 +24,13 @@ h1 {
     margin: 2px;
     float: left;
     width: max-content;
+    user-select: none;
 }
 
 .main {
-    font-family: 'SmallCaps', sans-serif;
-    font-size: 12px;
+    font-family: "Times New Roman", Times, serif;
+    font-size: 14px;
     font-weight: bold;
-    font-variant: small-caps;
     color: black;
 }
 

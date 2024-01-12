@@ -9,17 +9,18 @@
 
   <body>
     <div class="main">
-      <h1>exe file parser</h1>            <!--The h1 class was modified? in the css file-->
-      <div>Upload exe file below...</div>
+      <h1>exe file reader</h1>            <!--The h1 class was modified? in the css file-->
+      <!--<div>Upload exe file below...</div>-->
       <!--<button class="button_css" id="btn">BUTTON</button>-->
       <div id="demo">Current files: </div>
       <input id="uploaded-file" type="file" hidden>
-      <button class="body button_css" id="upld-file-btn">Click to add file</button>
+      <button class="body button_css" id="upld-file-btn">Add file</button>
+      <button class="body button_css" id="send-file-btn">Print exe</button>
       <!--<button class="button_css" id="send-file-btn">Send file</button>-->
       <div id="main-content">...</div>
-      <div>
-        <div class="radio" id="coeff-header">coeff header</div>
-        <div class="radio" id="shared-header">shared header</div>
+      <div class="normal_font">
+        Input flags: (in form -a -b -c ...)
+        <input type="text" id="flags-feild">
       </div>
       <p><iframe id="outframe" frameborder="1" height="600" width="95%"></iframe></p>
 

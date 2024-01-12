@@ -1,27 +1,2 @@
-Printing PE32 file...
+Failed to read the COFF header.
 
-0x0 - 0x80: DOS header
-	...
-
-0x80 - 0x98: COFF header
-	... <c>
-
-0x98 - 0xb4: Shared/Optional header
-	... <s>
-
-0xb4 - 0x178: Windows specific
-	... <w>
-
-0x178 - 0x3a8: Section headers
-	... <e>
-
-0x400 - 0x6600: Code content
-	... <a #>
-
-0x6600 - 0xb063: Symbol table
-	...
-
-0xb064 - 0xc477: String table
-	... <t>
-
-Virtual code: <t>

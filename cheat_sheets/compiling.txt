@@ -1,0 +1,13 @@
+GCC options (same as all other cc?)
+
+
+# Linking libs
+    - done with -lNAME
+    - In linux this will expand to libNAME.so and search lib paths
+    - add to lib search path with -LPATH
+    - COMMON LIBS: -lm (math) -lstdc++ (standard stuff?)
+# Adding to include pat
+use -I PATH
+
+
+

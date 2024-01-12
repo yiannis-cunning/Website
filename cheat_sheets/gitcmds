@@ -1,0 +1,23 @@
+
+# add a remote repository where you will be pushing TO
+#	- REMOTE-URL in form: git@github... (see repo on github to cpy path)
+
+git remote add orgin REMOTE-URL
+
+# just clone from a repository:
+git clone REMOTE-URL
+
+
+
+
+# KEYGEN
+#	- generates a key on this local machine (windows)
+#	- this will be used when comminicating with git - you give git the public key
+ssh-keygen -t ed25519 -C "your_email@example.com"
+
+
+
+
+
+
+
