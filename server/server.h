@@ -18,6 +18,7 @@
 #include <sys/wait.h>
 #include <sys/stat.h>
 #include "messages.h"
+#include <time.h>
 
 
 #define max_clients 200

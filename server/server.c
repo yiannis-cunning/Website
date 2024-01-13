@@ -324,6 +324,8 @@ int main(){
     register_signal(SIGINT);
     register_signal(SIGTERM);
 
+	time_t rawtime;
+	struct tm * timeinfo;
 
 	// sets up socket to file descriptor 'fd'
 	setup_socket();
@@ -347,8 +349,15 @@ int main(){
 			printf(" **** Error starting new client session!\n");
 			continue;
 		}
+		time ( &rawtime );
+		timeinfo = localtime ( &rawtime );
 		s = inet_ntoa(((struct sockaddr_in *)&client_address)->sin_addr);
-		printf(" **** Accepted client : IP %s \n", s);
+		printf(" **** Accepted client at time %s : IP, time : %s", s, asctime (timeinfo));
+
+
+
+
+
 
 	}
 	pthread_mutex_destroy(&mutex);
