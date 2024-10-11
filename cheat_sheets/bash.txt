@@ -1,3 +1,0 @@
-## Alias and environemtal variables 
-alias cmd="text"
-export name="text"

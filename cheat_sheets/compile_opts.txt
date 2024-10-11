@@ -1,0 +1,24 @@
+GCC common options
+
+
+lNAME = link to taget library NAME
+    - expands to find libNAME.so on linux. Searches lib paths
+    - Common: -lm (link to math lib) -lstdc++ (link to standard cpp stuff)
+-LPATH
+    - add path to library search path
+-I PATH
+    - add to inlcude search paths 
+-OOPT
+    - Optimization level OPT = 0, 1, 2, 3, p
+-d
+    - add debugging info
+-pg
+    - add profiling info
+-
+    - add coverage info
+-static
+    - Compile librarys as static libs
+-o file
+    - output to file
+-S
+    - Output assembly code instead
