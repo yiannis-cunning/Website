@@ -1,0 +1,67 @@
+/* styles.css */
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #2c2c2c; /* Dark grey background */
+    color: white; /* Change text color to white for better contrast */
+}
+
+.navbar {
+    background-color: #000; /* Black background for the navbar */
+    display: flex; /* Use flexbox for layout */
+    justify-content: center; /* Center items horizontally */
+    padding: 10px 0; /* Add some vertical padding */
+}
+
+.navbar a {
+    display: block;
+    color: white;
+    text-align: center;
+    padding: 14px 20px;
+    text-decoration: none;
+}
+
+.navbar a:hover {
+    background-color: #ddd; /* Light grey on hover */
+    color: black;
+}
+
+.navbar .logo {
+    font-weight: bold;
+    font-size: 20px;
+    margin-right: 20px; /* Add some space after the logo */
+}
+
+.dropdown {
+    position: relative; /* Position relative for the dropdown */
+}
+
+.dropdown-content {
+    display: none; /* Hide dropdown content by default */
+    position: absolute; /* Position it below the dropdown */
+    background-color: #333; /* Background color for dropdown */
+    min-width: 160px; /* Minimum width of the dropdown */
+    z-index: 1; /* Make sure it appears above other elements */
+}
+
+.dropdown-content a {
+    padding: 12px 16px; /* Padding for dropdown items */
+    text-decoration: none; /* Remove underline */
+    display: block; /* Display as block */
+    color: white; /* Text color */
+}
+
+.dropdown-content a:hover {
+    background-color: #ddd; /* Light grey on hover for dropdown items */
+    color: black; /* Text color on hover */
+}
+
+.dropdown:hover .dropdown-content {
+    display: block; /* Show dropdown on hover */
+}
+
+.content {
+    padding-left: 33%; /* Start the content about a third from the left */
+    padding-right: 20px; /* Optional: Add some right padding */
+}

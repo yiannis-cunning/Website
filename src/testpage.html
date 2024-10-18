@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Top Menu Bar</title>
+    <link rel="stylesheet" href="styles.css"> <!-- Link to your CSS file -->
+</head>
+<body>
+
+    <div class="navbar">
+        <a href="#" class="logo">MyLogo</a>
+        <a href="#home">Home</a>
+        <a href="#services">Services</a>
+        <div class="dropdown">
+            <a href="#projects" class="dropbtn">Projects</a>
+            <div class="dropdown-content">
+                <a href="project1">Project 1</a>
+                <a href="#project2">Project 2</a>
+                <a href="#project3">Project 3</a>
+            </div>
+        </div>
+        <a href="#about">About</a>
+        <a href="#contact">Contact</a>
+    </div>
+
+    <div class="content">
+        <h1 id="regex-project">Regex project</h1>
+        <p><a href="https://github.com/">Github repo</a></p>
+        <p>For use on ASCII strings</p>
+        <p><a href="https://www.asciitable.com/">ascii table</a></p>
+        <p><a href="https://support.dataset.com/hc/en-us/articles/360047505053-DataSet-Regex">Regex general rules</a></p>
+        <h2 id="mini-regex-specification">Mini-regex specification</h2>
+        <p>Supported special characters:</p>
+        <table>
+        <thead>
+        <tr>
+        <th>Character</th>
+        <th>Meaning</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr>
+        <td>\</td>
+        <td></td>
+        <td>OR two possible matches</td>
+        </tr>
+        <tr>
+        <td>*</td>
+        <td>Repeat the previous group 0 or more times</td>
+        </tr>
+        <tr>
+        <td>+</td>
+        <td>Repeat the previous group 1 or more times</td>
+        </tr>
+        <tr>
+        <td>?</td>
+        <td>Match to previous group or skip</td>
+        </tr>
+        <tr>
+        <td>( )</td>
+        <td>Start grouping/end grouping</td>
+        </tr>
+        <tr>
+        <td>[]</td>
+        <td>Match to a caracter set</td>
+        </tr>
+        </tbody>
+        </table>
+        <h4 id="not-supported-right-now-">Not supported right now:</h4>
+        <ul>
+        <li>Macros of common character sets (ie: \w \d ... ext)</li>
+        <li>Repeat grouping N times operation {N}</li>
+        <li>Inverse of character set [^x]</li>
+        <li>Match to start or end of string ($ / ^)</li>
+        </ul>
+        <h4 id="character-sets-">Character sets:</h4>
+        <p>Will take characters inside as literal. If there is a dash (-) then the range between the two ASCII codes will be taken.</p>
+        <h2 id="usage">Usage</h2>
+        <pre><code class="lang-c">    <span class="hljs-keyword">regex_t</span> x = <span class="hljs-keyword">new</span> <span class="hljs-keyword">regex_t</span>(<span class="hljs-keyword">char</span> *s);
+            <span class="hljs-keyword">bool</span> a = x.match(<span class="hljs-string">"Testinput"</span>);
+            <span class="hljs-keyword">if</span>(a){
+                <span class="hljs-built_in">printf</span>(<span class="hljs-string">"Input matched regex!\n"</span>);
+            } <span class="hljs-keyword">else</span>{
+                <span class="hljs-built_in">printf</span>(<span class="hljs-string">"Regex did not match!\n"</span>);
+            }
+        </code></pre>
+        <h2 id="implementation">Implementation</h2>
+        <h3 id="-1-tokenization">(1) Tokenization</h3>
+        <p>All inputs will be turned in to uniform tokens.
+        Their type will be one of the following:</p>
+        <ul>
+        <li>STRING - string of consecutive normal characters</li>
+        <li>SPCL - special characters that operate on a group - * / + / ?</li>
+        <li>CCL/CCR/SQR/SQL - left and right for both types of bracket</li>
+        <li>NULL - end of the string</li>
+        </ul>
+        <h3 id="-2-parsing-of-regex">(2) Parsing of Regex</h3>
+        <p>The tokens will be parsed according to the following rules:</p>
+        <ul>
+        <li>S -&gt; Regex</li>
+        <li>Regex -&gt; expr &lt;|&gt; Regex</li>
+        <li>Regex -&gt; expr</li>
+        <li>expr -&gt; grp spcl</li>
+        <li>expr -&gt; expr expr</li>
+        <li>grp -&gt; &lt;(&gt; Regex &lt;)&gt;</li>
+        <li>grp -&gt; &lt;[&gt; string &lt;]&gt;</li>
+        <li>grp -&gt; string</li>
+        </ul>
+        <p>Higher up rules have a higher precidence. Using the grammar a parse table can be constructed and a parse tree can be made for the regex input. This code can be generated using a tool such as ANTLR4.</p>
+        <p>In this code LR(1) parsing is used.</p>
+        <h3 id="-3-ast-creation-and-nfa-creation">(3) AST Creation and NFA Creation</h3>
+        <p>Using the parse tree, a abstract syntax tree can be made to put the structure of the regext in a more usable form. This is done after the parse tree is completley made.</p>
+        <h3 id="-4-dfa-construction">(4) DFA Construction</h3>
+        <p>Once the NFA is made it can be converted into a DFA.</p>
+        <h3 id="-5-regex-traversal">(5) Regex traversal</h3>
+        <p>Now that the DFA is made it is very simple to check if a new input string will match to the given Regex. The DFA can be looped to and if the input gets completed and you are on a finished state the string is accepted.</p>
+        
+    </div>
+
+</body>
+</html>
