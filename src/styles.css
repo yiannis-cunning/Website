@@ -5,6 +5,7 @@ body {
     padding: 0;
     background-color: #2c2c2c; /* Dark grey background */
     color: white; /* Change text color to white for better contrast */
+    height: 100%;
 }
 
 .navbar {
@@ -62,6 +63,10 @@ body {
 }
 
 .content {
-    padding-left: 33%; /* Start the content about a third from the left */
-    padding-right: 20px; /* Optional: Add some right padding */
+    padding: 10px;
+    margin: 10px;
+    margin-left: 10%;
+    margin-right: 10%;
+    margin-top: 20px;
+    background-color: #ddd;
 }
