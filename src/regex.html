@@ -1,6 +1,5 @@
-<h1 id="regex-project">Regex project</h1>
-<p><a href="https://github.com/yiannis-cunning/regex">Github repo</a>, <a href="https://www.asciitable.com/">ascii table</a>, <a href="https://support.dataset.com/hc/en-us/articles/360047505053-DataSet-Regex">Regex general rules</a></p>
-<h2 id="mini-regex-specification">Mini-regex specification</h2>
+<h1 id="mini-regex">Mini-regex</h1>
+<p><a href="https://github.com/yiannis-cunning/regex">Github repo</a>. <a href="https://www.asciitable.com/">ascii table</a>.</p>
 <p>For use on ASCII strings. Supported special characters:</p>
 <table>
 <thead>
@@ -9,10 +8,8 @@
 <th>Meaning</th>
 </tr>
 </thead>
-<tbody>
-<tr>
-<td></td>
-<td></td>
+<tbody><tr>
+<td>|</td>
 <td>OR two possible matches</td>
 </tr>
 <tr>
@@ -35,41 +32,49 @@
 <td>[]</td>
 <td>Match to a caracter set</td>
 </tr>
-</tbody>
-</table>
-<h4 id="not-supported-right-now-">Not supported right now:</h4>
+</tbody></table>
+<h4 id="not-supported-right-now">Not supported right now:</h4>
 <ul>
 <li>Macros of common character sets (ie: \w \d ... ext)</li>
 <li>Repeat grouping N times operation {N}</li>
 <li>Inverse of character set [^x]</li>
 <li>Match to start or end of string ($ / ^)</li>
 </ul>
-<h4 id="character-sets-">Character sets:</h4>
-<p>Will take characters inside as literal. If there is a dash (-) then the range between the two ASCII codes will be taken.</p>
+<h4 id="character-sets">Character sets:</h4>
+<p>Character sets will take the inside of the brackets as a literal. If there is a dash (-) then the range between the two ASCII codes will be taken.</p>
 <h2 id="usage">Usage</h2>
-<pre><code class="lang-c">    <span class="hljs-keyword">regex_t</span> x = <span class="hljs-keyword">new</span> <span class="hljs-keyword">regex_t</span>(<span class="hljs-keyword">char</span> *s);
-    <span class="hljs-keyword">bool</span> a = x.match(<span class="hljs-string">"Testinput"</span>);
-    <span class="hljs-keyword">if</span>(a){
-        <span class="hljs-built_in">printf</span>(<span class="hljs-string">"Input matched regex!\n"</span>);
-    } <span class="hljs-keyword">else</span>{
-        <span class="hljs-built_in">printf</span>(<span class="hljs-string">"Regex did not match!\n"</span>);
+<pre><code class="language-c++">    #include &quot;miniregex.h&quot;
+    miniregex_t x;
+    int ret = make_regex(&quot;aa|b+|[ac]*&quot;, &amp;x);
+    if(ret != 0){
+        //...
+    }
+
+    if(match_regex(x, &quot;...&quot;)){
+        printf(&quot;String matches\n&quot;);
+    } else{
+        printf(&quot;String does not match\n&quot;);
     }
 </code></pre>
+<p>Build test</p>
+<pre><code class="language-bash">meson setup build
+meson compile -C build
+</code></pre>
 <h2 id="implementation">Implementation</h2>
-<p><img src="imgs/image.jpg" alt="img" width="100%" height="auto"></p>
-<h3 id="-1-tokenization">(1) Tokenization</h3>
-<p>All inputs will be turned in to uniform tokens.
-Their type will be one of the following:</p>
+<h3 id="1-tokenization">1. Tokenization</h3>
+<p>The first stage will be to convert the input regular expresion into a list of tokens. Their type will be one of the following:</p>
 <ul>
 <li>STRING - string of consecutive normal characters</li>
 <li>SPCL - special characters that operate on a group - * / + / ?</li>
 <li>CCL/CCR/SQR/SQL - left and right for both types of bracket</li>
 <li>NULL - end of the string</li>
 </ul>
-<h3 id="-2-create-parse-tree">(2) Create Parse Tree</h3>
-<p>The tokens will be parsed according to the following rules:</p>
+<h3 id="2-creating-the-parse-tree">2. Creating the Parse Tree</h3>
+<p>Next the regex string will be parsed with a LR(1) parser.</p>
+<p>The below grammar was used for parsing. The parse table was generated using the state diagram shown below.</p>
 <ul>
 <li>S -&gt; Regex</li>
+<li>Regex -&gt; expr &lt;|&gt; Regex</li>
 <li>Regex -&gt; expr &lt;|&gt; Regex</li>
 <li>Regex -&gt; expr</li>
 <li>expr -&gt; grp spcl</li>
@@ -78,13 +83,11 @@ Their type will be one of the following:</p>
 <li>grp -&gt; &lt;[&gt; string &lt;]&gt;</li>
 <li>grp -&gt; string</li>
 </ul>
-<p>Higher up rules have a higher precidence. Using the grammar a parse table can be constructed and a parse tree can be made for the regex input. This code can be generated using a tool such as ANTLR4.</p>
-<p>In this code LR(1) parsing is used. Below can be seen the complete parse state diagram:</p>
-<h3 id="-3-convert-to-ast">(3) Convert to AST</h3>
+<h3 id="3-convert-to-ast">3. Convert to AST</h3>
 <p>Using the parse tree, a abstract syntax tree can be made to put the structure of the regext in a more usable form. This is done after the parse tree is completley made.</p>
-<h3 id="-4-create-nfa">(4) Create NFA</h3>
-<p>Use the AST to create a NFA graph.</p>
-<h3 id="-5-dfa-construction">(5) DFA Construction</h3>
-<p>Once the NFA is made it can be converted into a DFA.</p>
-<h3 id="-6-regex-traversal">(6) Regex traversal</h3>
-<p>Now that the DFA is made it is very simple to check if a new input string will match to the given Regex. The DFA can be looped to and if the input gets completed and you are on a finished state the string is accepted.</p>
+<h3 id="4-nfa-creation-and-dft-conversion">4. NFA creation and DFT conversion</h3>
+<p>Next a nondeterministic finite automaton (NFA) can be created out of the different levels of the AST. This can then be converted directly to a deterministic finite automaton (DFA) by merging states of the NFA repeatedly.</p>
+<h3 id="6-regex-traversal">6. Regex traversal</h3>
+<p>In order to test a given input string, the DFA can be traversed by progresing to the next state if there is a edge that the input character matches too and if it ends on a finish state.</p>
+<h3>Complete parsing state diagram:</h3>
+<p><img src="imgs/image.jpg" alt="img" width="100%" height="auto"></p>
