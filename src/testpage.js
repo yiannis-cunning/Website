@@ -3,7 +3,7 @@
 document.getElementById("regex").addEventListener("click", function(){setcontent("regex.html");});
 document.getElementById("httpserver").addEventListener("click", function(){setcontent("server.html");});
 document.getElementById("contact").addEventListener("click", function(){setcontent("contact.html");});
-document.getElementById("pefiles").addEventListener("click", function(){setcontent("exefiles.html");});
+document.getElementById("pefiles").addEventListener("click", function(){setcontent("pefiles_frame.html");});
 
 
 document.getElementById("gohome").addEventListener("click", function(){document.getElementById('maincontent').innerHTML = "Homepage";});
