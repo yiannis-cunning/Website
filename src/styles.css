@@ -63,10 +63,12 @@ body {
 }
 
 .content {
-    padding: 10px;
+    padding: 50px;
     margin: 10px;
+    border-radius: 25px;
     margin-left: 10%;
     margin-right: 10%;
     margin-top: 20px;
-    background-color: #ddd;
+    background-color: #000;
+    font-family: 'Times New Roman', Times, serif;
 }

@@ -1,11 +1,13 @@
 
 
-document.getElementById("project1").addEventListener("click", setcontent);
-function setcontent() {
+document.getElementById("regex").addEventListener("click", function(){setcontent("regex.html");});
 
 
+document.getElementById("gohome").addEventListener("click", function(){document.getElementById('maincontent').innerHTML = "Homepage";});
+
+function setcontent(newcontent) {
     var txtFile = new XMLHttpRequest();
-    txtFile.open("GET", "regex.html", true);
+    txtFile.open("GET", newcontent, true);
     txtFile.onreadystatechange = function() {
       if (txtFile.readyState === 4) {  // Makes sure the document is ready to parse.
         if (txtFile.status === 200) {  // Makes sure it's found the file.

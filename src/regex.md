@@ -1,20 +1,14 @@
 # Regex project
 
-[Github repo](https://github.com/)
-
-For use on ASCII strings
-
-[ascii table](https://www.asciitable.com/)
-
-[Regex general rules](https://support.dataset.com/hc/en-us/articles/360047505053-DataSet-Regex)
+[Github repo](https://github.com/yiannis-cunning/regex), [ascii table](https://www.asciitable.com/), [Regex general rules](https://support.dataset.com/hc/en-us/articles/360047505053-DataSet-Regex)
 
 ## Mini-regex specification
 
-Supported special characters:
+For use on ASCII strings. Supported special characters:
 
 | Character | Meaning|
 | --------- | ------ |
-| \|         | OR two possible matches |
+| |         | OR two possible matches |
 | *         | Repeat the previous group 0 or more times |
 | +         | Repeat the previous group 1 or more times |
 | ?         | Match to previous group or skip |
