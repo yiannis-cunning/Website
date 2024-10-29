@@ -9,10 +9,13 @@ The basic structure of this server is show below.
 ```c
 int main(){
 
-       // Setup socket on port 80 (http) - socket(), bind(), ...
+       // Setup socket on port 80 (http)
+       //           socket(), bind(), ...
        while(true){
-              // Listen for new connection - listen()
-              //     Make new thread to Parse https requests and respond - pthread_create(), pthread_detach()
+              // Listen for new connection
+              //     listen()
+              // Make new thread to parse https requests and respond
+              //     pthread_create(), pthread_detach(), read/write()
        }
 
 }

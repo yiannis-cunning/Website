@@ -2,7 +2,7 @@
 
 [github repo](https://github.com/yiannis-cunning/regex). [ascii table](https://www.asciitable.com/).
 
-For use on ASCII strings. Supported special characters:
+For use on ASCII, NULL terminated C strings. Supported special characters:
  
 | Character | Meaning|
 | --------- | ------ |
