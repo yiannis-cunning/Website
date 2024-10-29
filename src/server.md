@@ -1,18 +1,18 @@
 # HTTP server in C
 
-[Github repo](https://github.com/yiannis-cunning/Website)
+[github repo](https://github.com/yiannis-cunning/Website)
 
 This website is running on a http server writen in c. It utilizes sockets and threads to respond to valid GET/POST http requests.
 
-The basic structure of the server looks like the below.
+The basic structure of this server is show below.
 
 ```c
 int main(){
 
-       // Setup socket on port 80 (http)
+       // Setup socket on port 80 (http) - socket(), bind(), ...
        while(true){
-              // Listen for new connection
-              //     Make new thread to Parse https requests and respond
+              // Listen for new connection - listen()
+              //     Make new thread to Parse https requests and respond - pthread_create(), pthread_detach()
        }
 
 }

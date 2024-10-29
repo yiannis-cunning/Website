@@ -6,7 +6,7 @@ document.getElementById("contact").addEventListener("click", function(){setconte
 document.getElementById("pefiles").addEventListener("click", function(){setcontent("pefiles_frame.html");});
 
 
-document.getElementById("gohome").addEventListener("click", function(){document.getElementById('maincontent').innerHTML = "Homepage";});
+document.getElementById("gohome").addEventListener("click", function(){document.getElementById('maincontent').innerHTML = "<h3>Homepage</h3>";});
 
 function setcontent(newcontent) {
     var txtFile = new XMLHttpRequest();

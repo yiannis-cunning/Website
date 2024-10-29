@@ -1,6 +1,6 @@
 # Mini-regex
 
-[Github repo](https://github.com/yiannis-cunning/regex). [ascii table](https://www.asciitable.com/).
+[github repo](https://github.com/yiannis-cunning/regex). [ascii table](https://www.asciitable.com/).
 
 For use on ASCII strings. Supported special characters:
  
