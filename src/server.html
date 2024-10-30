@@ -1,17 +1,49 @@
-<h1 id="http-server-in-c">HTTP server in C</h1>
-<p><a href="https://github.com/yiannis-cunning/Website">github repo</a></p>
-<p>This website is running on a http server writen in c. It utilizes sockets and threads to respond to valid GET/POST http requests.</p>
-<p>The basic structure of this server is show below.</p>
-<pre><code class="language-c">int main(){
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>webpage</title>
+    <link rel="stylesheet" href="styles.css">
+    <!--<script defer src="./testpage.js"></script>-->
+</head>
+<body>
 
-       // Setup socket on port 80 (http)
-       //           socket(), bind(), ...
-       while(true){
-              // Listen for new connection
-              //     listen()
-              // Make new thread to parse https requests and respond
-              //     pthread_create(), pthread_detach(), read/write()
+    <div class="navbar">
+        <a href="testpage.html" class="logo">Home</a>
+        <div class="dropdown">
+            <a href="projects.html">Projects</a>
+            <div class="dropdown-content">
+                <a href="regex.html">Regex C++</a>
+                <a href="server.html">HTTP server</a>
+                <a href="pefiles_frame.html">PE file decoder</a>
+            </div>
+        </div>
+        <a href="contact.html">Contact</a>
+    </div>
+
+    <div class="content" id="maincontent">
+
+       <h1 style="text-align: center;">HTTP server in C</h1>
+       <p><a class="goodlinks" href="https://github.com/yiannis-cunning/Website">github repo</a></p>
+       <h2 class="subhead">Implementation</h2>
+       <p>This website is running on a http server writen in c. It utilizes sockets and threads to respond to valid GET/POST http requests.</p>
+       <p>The basic structure of this server is show below.</p>
+       <pre><code class="language-c">int main(){
+       
+              // Setup socket on port 80 (http)
+              //           socket(), bind(), ...
+              while(true){
+                     // Listen for new connection
+                     //     listen()
+                     // Make new thread to parse https requests and respond
+                     //     pthread_create(), pthread_detach(), read/write()
+              }
+       
        }
+       </code></pre>
+       
+    </div>
 
-}
-</code></pre>
+</body>
+</html>

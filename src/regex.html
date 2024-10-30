@@ -1,93 +1,124 @@
-<h1 id="mini-regex">Mini-regex</h1>
-<p><a href="https://github.com/yiannis-cunning/regex">Github repo</a>. <a href="https://www.asciitable.com/">ascii table</a>.</p>
-<p>For use on ASCII strings. Supported special characters:</p>
-<table>
-<thead>
-<tr>
-<th>Character</th>
-<th>Meaning</th>
-</tr>
-</thead>
-<tbody><tr>
-<td>|</td>
-<td>OR two possible matches</td>
-</tr>
-<tr>
-<td>*</td>
-<td>Repeat the previous group 0 or more times</td>
-</tr>
-<tr>
-<td>+</td>
-<td>Repeat the previous group 1 or more times</td>
-</tr>
-<tr>
-<td>?</td>
-<td>Match to previous group or skip</td>
-</tr>
-<tr>
-<td>( )</td>
-<td>Start grouping/end grouping</td>
-</tr>
-<tr>
-<td>[]</td>
-<td>Match to a caracter set</td>
-</tr>
-</tbody></table>
-<h4 id="not-supported-right-now">Not supported right now:</h4>
-<ul>
-<li>Macros of common character sets (ie: \w \d ... ext)</li>
-<li>Repeat grouping N times operation {N}</li>
-<li>Inverse of character set [^x]</li>
-<li>Match to start or end of string ($ / ^)</li>
-</ul>
-<h4 id="character-sets">Character sets:</h4>
-<p>Character sets will take the inside of the brackets as a literal. If there is a dash (-) then the range between the two ASCII codes will be taken.</p>
-<h2 id="usage">Usage</h2>
-<pre><code class="language-c++">    #include &quot;miniregex.h&quot;
-    miniregex_t x;
-    int ret = make_regex(&quot;aa|b+|[ac]*&quot;, &amp;x);
-    if(ret != 0){
-        //...
-    }
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>webpage</title>
+    <link rel="stylesheet" href="styles.css">
+    <!--<script defer src="./testpage.js"></script>-->
+</head>
+<body>
 
-    if(match_regex(x, &quot;...&quot;)){
-        printf(&quot;String matches\n&quot;);
-    } else{
-        printf(&quot;String does not match\n&quot;);
-    }
-</code></pre>
-<p>Build test</p>
-<pre><code class="language-bash">meson setup build
-meson compile -C build
-</code></pre>
-<h2 id="implementation">Implementation</h2>
-<h3 id="1-tokenization">1. Tokenization</h3>
-<p>The first stage will be to convert the input regular expresion into a list of tokens. Their type will be one of the following:</p>
-<ul>
-<li>STRING - string of consecutive normal characters</li>
-<li>SPCL - special characters that operate on a group - * / + / ?</li>
-<li>CCL/CCR/SQR/SQL - left and right for both types of bracket</li>
-<li>NULL - end of the string</li>
-</ul>
-<h3 id="2-creating-the-parse-tree">2. Creating the Parse Tree</h3>
-<p>Next the regex string will be parsed with a LR(1) parser.</p>
-<p>The below grammar was used for parsing. The parse table was generated using the state diagram shown below.</p>
-<ul>
-<li>S -&gt; Regex</li>
-<li>Regex -&gt; expr &lt;|&gt; Regex</li>
-<li>Regex -&gt; expr &lt;|&gt; Regex</li>
-<li>Regex -&gt; expr</li>
-<li>expr -&gt; grp spcl</li>
-<li>expr -&gt; expr expr</li>
-<li>grp -&gt; &lt;(&gt; Regex &lt;)&gt;</li>
-<li>grp -&gt; &lt;[&gt; string &lt;]&gt;</li>
-<li>grp -&gt; string</li>
-</ul>
-<h3 id="3-convert-to-ast">3. Convert to AST</h3>
-<p>Using the parse tree, a abstract syntax tree can be made to put the structure of the regext in a more usable form. This is done after the parse tree is completley made.</p>
-<h3 id="4-nfa-creation-and-dft-conversion">4. NFA creation and DFT conversion</h3>
-<p>Next a nondeterministic finite automaton (NFA) can be created out of the different levels of the AST. This can then be converted directly to a deterministic finite automaton (DFA) by merging states of the NFA repeatedly.</p>
-<h3 id="6-regex-traversal">6. Regex traversal</h3>
-<p>In order to test a given input string, the DFA can be traversed by progresing to the next state if there is a edge that the input character matches too and if it ends on a finish state.</p>
-<h3>Complete parsing state diagram:</h3>
-<p><img src="imgs/image.jpg" alt="img" width="50%" height="auto"></p>
+    <div class="navbar">
+        <a href="testpage.html" class="logo">Home</a>
+        <div class="dropdown">
+            <a href="projects.html">Projects</a>
+            <div class="dropdown-content">
+                <a href="regex.html">Regex C++</a>
+                <a href="server.html">HTTP server</a>
+                <a href="pefiles_frame.html">PE file decoder</a>
+            </div>
+        </div>
+        <a href="contact.html">Contact</a>
+    </div>
+
+    <div class="content" id="maincontent">
+        <h1 id="mini-regex" style="text-align: center;">Mini-regex</h1>
+        <h2 class="subhead" id="mini-regex">Coverage</h1>
+        <p><a class=goodlinks href="https://github.com/yiannis-cunning/regex">Github repo</a> | <a class=goodlinks href="https://www.asciitable.com/">ascii table</a></p>
+        <p>For use on ASCII strings. Supported special characters:</p>
+        <table>
+        <thead>
+        <tr>
+        <th>Character</th>
+        <th>Meaning</th>
+        </tr>
+        </thead>
+        <tbody><tr>
+        <td>|</td>
+        <td>OR two possible matches</td>
+        </tr>
+        <tr>
+        <td>*</td>
+        <td>Repeat the previous group 0 or more times</td>
+        </tr>
+        <tr>
+        <td>+</td>
+        <td>Repeat the previous group 1 or more times</td>
+        </tr>
+        <tr>
+        <td>?</td>
+        <td>Match to previous group or skip</td>
+        </tr>
+        <tr>
+        <td>( )</td>
+        <td>Start grouping/end grouping</td>
+        </tr>
+        <tr>
+        <td>[]</td>
+        <td>Match to a caracter set</td>
+        </tr>
+        </tbody></table>
+        <h4 id="not-supported-right-now">Not supported right now:</h4>
+        <ul>
+        <li>Macros of common character sets (ie: \w \d ... ext)</li>
+        <li>Repeat grouping N times operation {N}</li>
+        <li>Inverse of character set [^x]</li>
+        <li>Match to start or end of string ($ / ^)</li>
+        </ul>
+        <h4 id="character-sets">Character sets:</h4>
+        <p>Character sets will take the inside of the brackets as a literal. If there is a dash (-) then the range between the two ASCII codes will be taken.</p>
+        <h2 class="subhead" id="usage">Usage</h2>
+        <pre><code class="language-c++">    #include &quot;miniregex.h&quot;
+            miniregex_t x;
+            int ret = make_regex(&quot;aa|b+|[ac]*&quot;, &amp;x);
+            if(ret != 0){
+                //...
+            }
+        
+            if(match_regex(x, &quot;...&quot;)){
+                printf(&quot;String matches\n&quot;);
+            } else{
+                printf(&quot;String does not match\n&quot;);
+            }
+        </code></pre>
+        <h2 class="subhead">Build</h2>
+        <pre><code class="language-bash">meson setup build
+        meson compile -C build
+        </code></pre>
+        <h1 id="implementation" style="text-align: center;">Implementation</h1>
+        <h3 class="subhead">1. Tokenization</h3>
+        <p>The first stage will be to convert the input regular expresion into a list of tokens. Their type will be one of the following:</p>
+        <ul>
+        <li>STRING - string of consecutive normal characters</li>
+        <li>SPCL - special characters that operate on a group - * / + / ?</li>
+        <li>CCL/CCR/SQR/SQL - left and right for both types of bracket</li>
+        <li>NULL - end of the string</li>
+        </ul>
+        <h3 class="subhead" id="2-creating-the-parse-tree">2. Creating the Parse Tree</h3>
+        <p>Next the regex string will be parsed with a LR(1) parser.</p>
+        <p>The below grammar was used for parsing. The parse table was generated using the state diagram shown below.</p>
+        <ul>
+        <li>S -&gt; Regex</li>
+        <li>Regex -&gt; expr &lt;|&gt; Regex</li>
+        <li>Regex -&gt; expr &lt;|&gt; Regex</li>
+        <li>Regex -&gt; expr</li>
+        <li>expr -&gt; grp spcl</li>
+        <li>expr -&gt; expr expr</li>
+        <li>grp -&gt; &lt;(&gt; Regex &lt;)&gt;</li>
+        <li>grp -&gt; &lt;[&gt; string &lt;]&gt;</li>
+        <li>grp -&gt; string</li>
+        </ul>
+        <h3 class="subhead" id="3-convert-to-ast">3. Convert to AST</h3>
+        <p>Using the parse tree, a abstract syntax tree can be made to put the structure of the regext in a more usable form. This is done after the parse tree is completley made.</p>
+        <h3 class="subhead"id="4-nfa-creation-and-dft-conversion">4. NFA creation and DFT conversion</h3>
+        <p>Next a nondeterministic finite automaton (NFA) can be created out of the different levels of the AST. This can then be converted directly to a deterministic finite automaton (DFA) by merging states of the NFA repeatedly.</p>
+        <h3 class="subhead" id="6-regex-traversal">6. Regex traversal</h3>
+        <p>In order to test a given input string, the DFA can be traversed by progresing to the next state if there is a edge that the input character matches too and if it ends on a finish state.</p>
+        <h3>Complete parsing state diagram:</h3>
+        <p><img src="imgs/image.jpg" alt="img" width="50%" height="auto"></p>
+                
+    </div>
+
+</body>
+</html>

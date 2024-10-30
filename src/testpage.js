@@ -4,9 +4,11 @@ document.getElementById("regex").addEventListener("click", function(){setcontent
 document.getElementById("httpserver").addEventListener("click", function(){setcontent("server.html");});
 document.getElementById("contact").addEventListener("click", function(){setcontent("contact.html");});
 document.getElementById("pefiles").addEventListener("click", function(){setcontent("pefiles_frame.html");});
+document.getElementById("projects").addEventListener("click", function(){setcontent("projects.html");});
+
+document.getElementById("gohome").addEventListener("click", function(){setcontent("homepage.html");});
 
 
-document.getElementById("gohome").addEventListener("click", function(){document.getElementById('maincontent').innerHTML = "<h3>Homepage</h3>";});
 
 function setcontent(newcontent) {
     var txtFile = new XMLHttpRequest();
