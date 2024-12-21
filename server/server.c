@@ -1,19 +1,22 @@
 #include "server.h"
 
 // copy from src to dest until you see a space character in src (or to max of 200 chars) (or to null character in src)
-void strcpy_utlspace(char *dest, char *src){
+int strcpy_utlspace(char *dest, char *src, int max){
 	int i = 0;
 	while(src[i] != '\0' && src[i] != ' '){
-		passert(i != 200 && src[i] != '\0', "Error copying over path to buffer\n");
-		dest[i] = src[i];
+		//passert(i != (max) && src[i] != '\0', "Error copying over path to buffer\n");
+		if(i == max || src[i] == '\0'){return -1;}
+        
+        dest[i] = src[i];
 		i += 1;
 	}
 	dest[i] = '\0';
+    return 0;
 }
 
 
 int open_path(char *get_buffer, int *filetype_p, int tid){
-	char path_buffer[256];
+	char path_buffer[512];
 	regex_t reegex;
 
 
@@ -21,12 +24,15 @@ int open_path(char *get_buffer, int *filetype_p, int tid){
 
 
 	strcpy(path_buffer, website_root);
-	strcpy_utlspace(path_buffer + website_root_len, get_buffer + 4);
+    if(strcpy_utlspace(path_buffer + website_root_len, get_buffer + 4, 512 - website_root_len - 1) == -1){
+        printf("Error copying over path to buffer\n");
+        return -1;
+    }
 	printf("(%d)     **** Trying to get file: %s\n", tid, path_buffer);
 
 	// 2) Handle the case where inp path = empty
 	if(path_buffer[website_root_len+1] == '\0'){ // .../Website/src
-		strcpy(path_buffer + website_root_len + 1, "frontpage.html");
+		strcpy(path_buffer + website_root_len + 1, "testpage.html");
 	}
 
 	// 3) check that the added part is just filename.ext[\\:alnum\\:] -> ONLY ALLOWED FILE REGIONS + invalid path characters
@@ -39,6 +45,7 @@ int open_path(char *get_buffer, int *filetype_p, int tid){
 	}
 
 	if(strncmp(path_buffer + website_root_len, KILL_PAGE_LITERAL, 15) == 0){
+        printf("Exited due to kill page...\n");
 		exit(1);
 	}
 	// 3) Try to open the vetted path
@@ -83,7 +90,7 @@ int push_req(char *req_buffer, int req_sz, int client_fd, int tid){
 	char flags[10];
 	int n_flags = 0;
 	// POST /ext
-    if(strncmp(req_buffer + 5 , "/upld.exe", 8 ) != 0){return -1;}
+    if(strncmp(req_buffer + 5 , "/upld.exe", 8 ) != 0){printf("Bad file name\n"); return -1;}
 
 
 	int i_1 = 14;
@@ -99,9 +106,9 @@ int push_req(char *req_buffer, int req_sz, int client_fd, int tid){
 
 
 
-	if(match_feild(req_buffer, "Content-Length:", file_sz_s, 12) != 0){return -1;}
+	if(match_feild(req_buffer, "Content-Length:", file_sz_s, 12) != 0){printf("Bad content: %s\n", req_buffer); return -1;}
 	file_sz = atoi(file_sz_s);
-	if(file_sz >= MAX_EXE_INPUT_SZ){return -1;}
+	if(file_sz >= MAX_EXE_INPUT_SZ){printf("pushed input is too big\n"); return -1;}
 
 	// 2) save the file that was sent to a temp file, make a output text file for result
 	char tmp_file_path[website_root_len + 25];
@@ -122,19 +129,20 @@ int push_req(char *req_buffer, int req_sz, int client_fd, int tid){
 	itoa(tid, tmp_file_path + strlen("/tmp/temp_in") + website_root_len, 10);
 	itoa(tid, tmp_file_dest_path + strlen("/tmp/temp_out") + website_root_len, 10);
 
-
 	remove(tmp_file_path);
 	remove(tmp_file_dest_path);
     fd_tmp = open(tmp_file_path, O_WRONLY | O_CREAT, S_IRWXU | S_IRWXG | S_IRWXO | S_ISUID | S_ISGID | S_ISVTX);
-	if(fd_tmp == -1){return -1;}
+	if(fd_tmp == -1){printf("Could not make temp file-%s-\n", tmp_file_path); return -1;}
 	while(i < file_sz){
 		if(read(client_fd, &buf, 1) != 1){return -1;}
 		if(write(fd_tmp, &buf, 1) != 1){return -1;}
 		i += 1;
 	}
-	close(fd_tmp);
+    close(fd_tmp);
 	fd_tmp = open(tmp_file_dest_path, O_WRONLY | O_CREAT);
-	chmod(tmp_file_dest_path, S_IRUSR | S_IRGRP | S_IROTH);
+	
+	if(fd_tmp == -1){printf("Could not make dest temp file-%s-\n", tmp_file_path); return -1;}
+    chmod(tmp_file_dest_path, S_IRUSR | S_IRGRP | S_IROTH);
 
 	// 3) analyze the file
 	/*(NOTE: there may be many other fd's, threads, and child processes)*/
@@ -142,7 +150,7 @@ int push_req(char *req_buffer, int req_sz, int client_fd, int tid){
 	int waitstatus = 0;
 
 	child_pid = fork();					  // 1) make subprocess 
-	if(child_pid == -1){return -1;}
+	if(child_pid == -1){printf("Failed to make child process\n"); return -1;}
 	if(child_pid == 0){ 			      // 2) child subprocess should set up fd's then exec on wanted progam
 		dup2(fd_tmp, 1);
 		int fdlimit = (int)sysconf(_SC_OPEN_MAX);
@@ -159,7 +167,7 @@ int push_req(char *req_buffer, int req_sz, int client_fd, int tid){
 		}
 		args[2 + n_flags] = NULL;
 
-		execv("/tools/bin/readPE", args);
+		execv("/home/cunningy/Desktop/tools/bin/readPE", args);
 		exit(1);
 	}
 
@@ -169,7 +177,6 @@ int push_req(char *req_buffer, int req_sz, int client_fd, int tid){
 
 	// 4) delte the temporary file
 	remove(tmp_file_path);
-
 	// 5) write the response -> path to resource created (tmp/temp_out${tid})
 	int l = strlen(tmp_file_dest_path) - website_root_len;
     write_rsp(client_fd, 2, l); 		// just write the header
@@ -286,7 +293,7 @@ void end_session(int client_fd, void *arg, char *msg){
 	remove(tmp_file_dest_path);
 	strcpy(tmp_file_dest_path + website_root_len, "/tmp/temp_out");
 	itoa(*((int *)(arg) + 1), tmp_file_dest_path + website_root_len + strlen("/tmp/temp_out"), 10);
-	remove(tmp_file_dest_path);
+	//remove(tmp_file_dest_path);
 
 	pthread_mutex_lock(&mutex);
 	counter = counter - 1;
