@@ -105,7 +105,7 @@ table, th, td {
 }
 
 .goodlinks {
-    color: green; 
+    color: lightskyblue; 
     text-decoration: none;
 }
 .goodlinks:hover{

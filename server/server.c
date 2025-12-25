@@ -20,7 +20,7 @@ int open_path(char *get_buffer, int *filetype_p, int tid){
 	regex_t reegex;
 
 
-	// 1) Try to cpy path from the input buffer
+	// 1) Try to cpy path from the input buffer  
 
 
 	strcpy(path_buffer, website_root);
@@ -32,7 +32,7 @@ int open_path(char *get_buffer, int *filetype_p, int tid){
 
 	// 2) Handle the case where inp path = empty
 	if(path_buffer[website_root_len+1] == '\0'){ // .../Website/src
-		strcpy(path_buffer + website_root_len + 1, "testpage.html");
+		strcpy(path_buffer + website_root_len + 1, "homepage.html");
 	}
 
 	// 3) check that the added part is just filename.ext[\\:alnum\\:] -> ONLY ALLOWED FILE REGIONS + invalid path characters
@@ -69,7 +69,7 @@ int open_path(char *get_buffer, int *filetype_p, int tid){
 			*filetype_p = 0;
 		}
 		else{
-			*filetype_p = 1;
+			*filetype_p = 0;
 		}
 	}
 	printf("(%d)     **** Giving file: %s\n", tid, path_buffer);
@@ -398,6 +398,12 @@ Features
 	- post requests for ./upld.exe
 
 
+Allow for handling of generic HTML requests.
+    - Move this repo to a 'web server' repo
+    - ~/src/, ~/build/, ~/doc/ 
+    - outsource actions to functions for GET/PUT/PUSH ext... , provide arguments in form of JSON structures
+    - Allow for better Error storage
+    - Add web page for site statistics
 */
 
 

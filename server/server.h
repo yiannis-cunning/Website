@@ -22,11 +22,12 @@
 
 
 #define max_clients 200
-#define WEBSITE_ROOT_LITERAL "/home/yiannis/Desktop/Website/src"
-#define WEBSITE_ROOT_LEN_LITERAL sizeof("/home/yiannis/Desktop/Website/src") - 1
-#define KILL_PAGE_LITERAL "/123jsd3od93djib.dfe"
+#define WEBSITE_ROOT_LITERAL "/home/cunningy/Desktop/Website/src"
+#define WEBSITE_ROOT_LEN_LITERAL sizeof("/home/cunningy/Desktop/Website/src") - 1
+#define KILL_PAGE_LITERAL "/123jsd3oddjib.dfe"
 #define ALLOWABLE_PAGES_REGEX "/(tmp/)?[A-Za-z0-9_-]+(\\.[A-Za-z0-9]+)?"
-#define IP_ADD_LITERAL "192.168.4.47"
+//#define IP_ADD_LITERAL "192.168.2.55"
+#define IP_ADD_LITERAL "192.168.2.182"
 
 static uint16_t MAX_MSG_HEADER_SZ = 4096;
 static uint32_t MAX_EXE_INPUT_SZ = 4096*16;
