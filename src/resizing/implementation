@@ -6,31 +6,145 @@
     <title>Projects</title>
     <link rel="stylesheet" href="../styles.css">
     <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-mml-chtml.js"></script>
+
+    <!-- Code snippet library -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/verilog.min.js"></script>
+    <script>hljs.highlightAll();</script>
+
 </head>
 <body>
 
-    <div class="navbar">
-        <a href="../homepage.html">Home</a>
-        <div class="dropdown">
-            <!--<a href="overview">Hardware Resizing</a>-->
-            <a>Hardware Resizing</a>
-            <div class="dropdown-content">
-                <a href="overview">Overview</a>
-                <a href="implementation">Implementation</a>
-            </div>
-        </div>
-    </div>
+    <script defer src="/navbar.js"></script>
+    <div class="navbar" id="nav-bar"></div>
 
     <div class="content" id="maincontent">
         <h1 style="text-align: center;">Hardware Implementation</h1>
-        <p>
-            In order to minimize latency and register/SRAM usage, the processing of the frames will be done continously.
-        </p>
-        <ul>
-            <li><a class=goodlinks href="https://github.com/yiannis-cunning/ECE532_Project_KMeans/tree/main">Github repo</a></li>
-            <li><a class=goodlinks href="https://github.com/yiannis-cunning/ECE532_Project_KMeans/blob/main/doc/Final_Project_Report.pdf">Project Report</a></li>
-        </ul>
-    </div>
 
+
+        <h2 class="subhead" id="algorithim">Constraints</h1>
+        <p>
+            This module will take the 1280x720p 60fps video as a input using the the Xilinx RGB video format, then will crop the image to the desired size, 
+            then will re-size this sub-image to a 28x28 video stream
+            <br> <br>
+
+            Input signals:
+            <table>
+                <!--<caption>Resizing IP input signals</caption>-->
+                <thead>
+                  <tr>
+                    <th>Interface</th>
+                    <th>Signals</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <!-- Video input -->
+                  <tr>
+                    <td>RGB video I/P</td>
+                    <td>
+                      rgb_i_data[23:0] // R, G, B pixel values - each 1 byte <br>
+                      rgb_i_valid // above signal has a valid pixel <br>
+                      rgb_i_hsync // pulsed at the end of each horrizontal pixel row (1280) <br>
+                      rgb_i_vsync // pulsed at the end of all the horrizontal rows (720) <br>
+                    </td>
+                    <td> Input vide stream passed from the vivado HDMI IP.</td>
+                  </tr>
+
+                  <!-- Video output  -->
+                  <tr>
+                    <td>RGB video O/P</td>
+                    <td>
+                      data_o[7:0] // Luminance value <br>
+                      valid_o // above signal has a valid pixel <br>
+                      vsync_gen_o // pulsed at the end of the frame - no hsync used <br>
+                    </td>
+                    <td> Output video stream passed to K-Means logic and to DMA </td>
+                  </tr>
+
+                  <!-- Control signals  -->
+                  <tr>
+                    <td>Contol signals</td>
+                    <td>
+                        clk // Pixel clock <br>
+                        resetn // Pixel reset <br>
+                        resetn_sub_image_filter // Synchronous reset - for debugging  <br>
+                        enable_sub_image_filter // Enable Resizing / video output <br>
+                    </td>
+                    <td> clock, reset and enable signals</td>
+                  </tr>
+
+                  <!-- Sub-region control  -->
+                  <tr>
+                    <td>Sub-region control / Crop box</td>
+                    <td>
+                      top_left_x_0[15:0] //  <br>
+                      top_left_y_0[15:0] //  <br>
+                      bot_right_x_0[15:0] // unsigned int value, between 0-1279  <br>
+                      bot_right_y_0[15:0] // unsigned int value, between 0-719 <br>
+                      update_0 // To indicate a new sub-box is desired.<br>
+                    </td>
+                    <td> Sub-region control </td>
+                  </tr>
+
+                </tbody>
+              </table>
+
+        </p>
+
+
+
+    <h2 class="subhead">7-Stage flow</h1>
+
+    <p></p>
+      <p><img src="/imgs/pipeline.png" alt="img" width="50%" height="auto"></p>
+    </p>
+
+    * Fifo buffers were added before horrizontal and veritical filters to allow for more flexable timing
+    <!--
+    <h3>1. Sub-image filter (Crop) </h1>
+    Crop the image based on the user selected box. <br>
+    <p>
+      <p><img src="/imgs/step1_crop.png" alt="img" width="25%" height="auto"></p>
+    </p>
+    Latency impact: 0 // non used pixels are just skipped. <br>
+    Area impact: ~37 registers, minimal gates // State and counter logic <br>
+
+    <h3>2. Luminance filter </h1>
+    Convert the RGB pixel value into brigtness value <br>
+    <p></p>
+      <p><img src="/imgs/stage2_luminance.png" alt="img" width="25%" height="auto"></p>
+    </p>
+
+    Latency impact: 3 pclk cycles // 3 cycles given for 8-bit mult + add operation<br>
+    Area impact: ~50 registers, 3 gate implmented DSP units // State and counter logic <br>
+
+
+    <h3>3. FIFO stage </h1>
+      Adding timing allowance for next stage. 64 Pixels/Bytes deep <br>
+  
+      Latency impact: ?<br>
+      Area impact: ? <br>
+
+    <h3>4. Horrizontal Average Filter </h1>
+        Resize the image horrizontally into 28 pixels. <br>
+        <p></p>
+          <p><img src="/imgs/stage4_hor_avg.png" alt="img" width="25%" height="auto"></p>
+        </p>
+        Latency impact: ?<br>
+        Area impact: ? <br>
+
+    <h3>5. Normalizer 1</h1>
+          Normalize the 28 horrizontal pixels <br>
+          <p></p>
+            <p><img src="/imgs/stage4_hor_avg.png" alt="img" width="25%" height="auto"></p>
+          </p>
+          Latency impact: ?<br>
+          Area impact: ? <br>
+    -->
+
+    <!-- End class = content -->
+    </div>
 </body>
 </html>
