@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Projects</title>
+    <title>FPGA Digit Recognition</title>
     <link rel="stylesheet" href="../styles.css">
     <!--<script defer src="./testpage.js"></script>-->
     <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-mml-chtml.js"></script>
@@ -14,16 +14,19 @@
     <div class="navbar" id="nav-bar"></div>
 
     <div class="content" id="maincontent">
-        <h1 id="mini-regex" style="text-align: center;">Hardware Accelerated Frame Resizing IP</h1>
+        <h1 style="text-align: center;">FPGA Video Digit Recognition Using MNIST</h1>
 
-        <h2 class="subhead">Links</h1>
+        See also: <a class=goodlinks href="/resizing/resizing_implementation">Dynamic HW Video Resizing IP Implementation</a>
+
+        <h2 class="subhead">Links</h2>
             <ul>
-                <li><a class=goodlinks href="https://github.com/yiannis-cunning/ECE532_Project_KMeans/tree/main">Github repo</a></li>
+                <li><a class=goodlinks href="https://github.com/yiannis-cunning/ECE532_Project_KMeans/tree/main">GitHub repo</a></li>
                 <li><a class=goodlinks href="https://github.com/yiannis-cunning/ECE532_Project_KMeans/blob/main/doc/Final_Project_Report.pdf">Project Report</a></li>
                 <li><a class=goodlinks href="https://www.youtube.com/watch?v=L9q9B49reb8">Demo video</a></li>
+                <li><a class=goodlinks href="https://en.wikipedia.org/wiki/MNIST_database">MNIST</a></li>
             </ul>
 
-        <h2 class="subhead" id="mini-regex">Overview</h1>
+        <h2 class="subhead" >Overview</h2>
             <p>
                 <!--This project was done as part of ECE354? for planning and implementing some sort of HW accelerated task with a Nexys Video FPGA.
 
@@ -43,38 +46,46 @@
 
             </p>
             <p>
-                In this project, a nexys video FPGA was used to implment the system shown below. The FPGA intercepts the HDMI signal comming from
-                a latop, or other HDMI source, crops the image based on user inputs, then tries to classify the result as a number. <br>
-                
-                Although this is not a particularily usfull use case, this project is interesting as it deals with working with 
-                a high speed video stream and provides low latency, high frame rate classification, and the resizing logic was non trivial to implement.
+                In this project, a Nexys video FPGA was used to implement the system shown below. The FPGA intercepts the HDMI signal coming from
+                a laptop, or other HDMI source, crops the image based on user inputs, resizes the cropped video into a known format,
+                then tries to classify the result as a number using the K-Means algorithm, trained using the MNIST data set.
                 
 
+                <br>  <br>
+                
+                Although this is not a particularly useful system, this project is interesting as it involves working with 
+                a high resolution video stream and provides a low latency, high frame rate means of digit classification. The dynamic resizing IP block was also non-trivial to implement
+                and with some modifications could have uses in other applications.
+                
+
 
             </p>
-            <p>
-               <p><img src="/imgs/classification_all.png" alt="img" width="50%" height="auto"></p>
-            </p>
-            <p>
-                The input HDMI video stream is resized to a 28x28 video stream based on the sub-box slection of the user using the resizing IP.
-            </p>
-            <p>
-                Every input frame is stored in a SRAM buffer and classified using the K-means algorithim.
-            </p>
-            <p>
-                A microblaze controller is run in parallel with this process which captures the output result (i.e. a number 1-9), and the 28x28 frame from the SRAM buffer,
-                and then displays this info on the OLED screen, operating at the same frame rate as the HDMI input.
-            </p>
+            <p><img src="/imgs/classification_all.png" alt="img" width="50%" height="auto"></p>
 
-<!--
-            <p>
-            Main performance metrics:
+            Features:
+            <ul>
+                <li>The input HDMI video stream is resized to a 28x28 video stream based on the sub-box selection of the user. This is done using the custom dynamic resizing IP.</li> <br>
+                <li>This 28x28 frame is captured in an SRAM buffer for a short time while the K-Means algo is run.</li> <br>
+                <li>The final classification, and the resized image, are both captured by the MicroBlaze processor, and shown on the OLED screen. All at 60fps. </li> <br>
+                <li>HDMI is allowed to pass through to a monitor/HDMI sink. A box is imprinted on the screen to show what region the user has selected. </li>
+            </ul>
+            
+            
+            <br>
+
+
+
+            
+            Main Design Components:
                 <ul>
-                    <li>Gate count</li>
-                    <li>Register count</li>
-                    <li>Classifcation Latency </li>
+                    <li>HW dynamic resizing IP -> See <a class=goodlinks href="/resizing/resizing_implementation">Dynamic HW Video Resizing IP Implementation</a></li>
+                    <li>K-Means classification (HLS). Trained in software using MNIST data set</li>
+                    <li>Box control via push buttons </li>
+                    <li>MicroBlaze FW - Loop to capture 28x28 SRAM buffer, capture K-Means result, display both on the OLED display</li>
+                    <li>Software mode - Extra option to run all HW features in SW instead to show the improvement made by using HW. </li>
+                    <li>HDMI I/O + datapath</li>
                 </ul>
-            </p><br>-->
+            <br>
 
     </div>
 

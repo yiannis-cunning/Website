@@ -3,26 +3,36 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Projects</title>
+    <title>HW Video Resizing IP</title>
     <link rel="stylesheet" href="../styles.css">
     <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-mml-chtml.js"></script>
 </head>
 <body>
 
     <script defer src="/navbar.js"></script>
+    
+    <script defer src="/common/toc.js"></script>
+
     <div class="navbar" id="nav-bar"></div>
 
     <div class="content" id="maincontent">
-        <h1 style="text-align: center;">Hardware Resizing Implementation</h1>
+      <h1 style="text-align: center;">Dynamic Hardware Video Resizing IP</h1>
+
+      <nav class="toc">
+        <h2 class="subhead">Contents</h2>
+      </nav>
 
 
-        <h2 class="subhead" id="algorithim">Overview</h1>
-        <p>
-            This module will take the 1280x720p 60fps video as a input using the the Xilinx RGB video format, then will crop the image to the desired size, 
-            then will re-size this sub-image to a 28x28 video stream
+        <h2 class="subhead" id="overview">Overview</h2>
+        <div>
+            This module takes a 1280x720p 60fps video stream as an input using the Xilinx RGB video format. Next it will crop the image to the desired shape, 
+            then it will resize this cropped image to a 28x28 video stream. The cropping coordinates, and thus resizing ratio, can be changed dynamically by the user via the input pins. 
+            The output will always be a 28x28 video stream. There are no restrictions on the shape or size of the sub-image rectangle.
             <br> <br>
 
-            Input signals:
+            Dynamic input, fixed output. Low latency, low resource usage. As an enhancement, a few adjustments could be made to have dynamic input, dynamic output. <br> <br>
+
+            I/O signals:
             <table>
                 <!--<caption>Resizing IP input signals</caption>-->
                 <thead>
@@ -39,10 +49,10 @@
                     <td>
                       rgb_i_data[23:0] // R, G, B pixel values - each 1 byte <br>
                       rgb_i_valid // above signal has a valid pixel <br>
-                      rgb_i_hsync // pulsed at the end of each horrizontal pixel row (1280) <br>
-                      rgb_i_vsync // pulsed at the end of all the horrizontal rows (720) <br>
+                      rgb_i_hsync // pulsed at the end of each horizontal pixel row (1280) <br>
+                      rgb_i_vsync // pulsed at the end of all the horizontal rows (720) <br>
                     </td>
-                    <td> Input video stream passed from the vivado HDMI IP.</td>
+                    <td> Input video stream passed from the Vivado HDMI IP.</td>
                   </tr>
 
                   <!-- Video output  -->
@@ -58,7 +68,7 @@
 
                   <!-- Control signals  -->
                   <tr>
-                    <td>Contol signals</td>
+                    <td>Control signals</td>
                     <td>
                         clk // Pixel clock <br>
                         resetn // Pixel reset <br>
@@ -84,23 +94,31 @@
                 </tbody>
               </table>
 
-        </p>
+          <br>
+          Post-Optimization Implementation Results: (On Artix-7 FPGA)
+          <p><img src="/imgs/resizing-ip-utilization.png" alt="img" width="20%" height="auto"></p>
+
+
+          Simulation results:
+          <p><img src="/resizing/imgs/resizing-sim-results.png" alt="img" width="20%" height="auto"></p>
+
+        </div>
+
+
+
+
 
 
 
         
-  <h2 class="subhead" id="algorithim">Algorithim</h1>
+  <h2 class="subhead" id="Algorithm">Algorithm</h2>
 
-    This algorithim needs to allow for upsampling and downsampling of the input image on both the horrizontal and vertical axis. This will also
-    ideally require no change in logic to switch between these modes. <br> <br>
+    This algorithm needs to allow for arbitrary upsampling and downsampling of the input image on both the horizontal and vertical axis. 
+    It also must be able to change the sampling ratio dynamically. <br> <br>
     
-    With this algo, the coordinate system from the source image will be translated to the destination image. Then the destination pixels 
-    will be computed as the average of overlapping pixels in the source domain. This Algo is formalized below. <br> <br>
-    
-    If this project was to be done again, this module can likely be simplified alot without sacrificing much functionality. 
-    This could include only allowing down-sampling, or making the output image classification size 32x32 rather than 28x28 to
-    simplify some computations. <br> <br>
-
+    With this algo, the coordinates are translated between source and destination images. Then the destination pixels 
+    are computed as the average of all the overlapping pixels in the source domain. This Algo is formalized below. <br> <br>
+  
     <br> 
     The input/output of this module are essentially the two below arrays:
 
@@ -109,15 +127,15 @@ output destination_frame[28-1:0][28-1:0] = {0xII}   // Intensity value 0-255
 </code></pre>
 
 
-    The source frame can be shown instead as the below continous function: <br>
-      $$ f(x, y) = source\_continous(x, y) = source\_frame[floor(x)][floor(y)],  {0 <= x < w, 0 <= y < h}$$
+    The source frame can be shown instead as the below continuous function: <br>
+      $$ f(x, y) = source\_continuous(x, y) = source\_frame[floor(x)][floor(y)],  \{0 \le x < w, 0 \le y < h\}$$
 
-    Coordnates can be translated from the desitationt to source domain with the below equation:
+    Coordinates can be translated from the destination to source domain with the below equation:
       <!-- $$ x_{src} = w*i/28 $$ -->
       <!-- $$ y_{src} = h*j/28 $$ -->
-      $$ \vec{R_{src}}(i, j) = \begin{bmatrix} x \\ y \end{bmatrix} = \begin{bmatrix} i \\ j \end{bmatrix} * \begin{bmatrix} w/28 & h/28 \end{bmatrix}$$
+      $$ \vec{R_{src}}(i, j) = \begin{bmatrix} x \\ y \end{bmatrix} = \begin{bmatrix} w/28 & 0 \\ 0 & h/28 \end{bmatrix} * \begin{bmatrix} i \\ j \end{bmatrix} $$
 
-    Where w, h are the width/height of the source pixel array respectivley. And 28 is constant as the output frame is always 28x28<br> <br>
+    Where w, h are the width/height of the source pixel array respectively. And 28 is constant as the output frame is always 28x28. <br> <br>
 
     So the precise equation used for resizing is the below:
       $$ dest\_array[i][j] = \frac{\int_{A} f(x, y) dxdy}{\int_{A} dxdy}$$
@@ -125,63 +143,94 @@ output destination_frame[28-1:0][28-1:0] = {0xII}   // Intensity value 0-255
     Where A is the area in between the points (i, j) -> (i + 1, j + 1) translated into the source domain. i.e. Area between two points below :
       $$ A(i, j):  \vec{R_{src}}(i, j) - to - \vec{R_{src}}(i + 1, j + 1) $$
 
-    Given that the image may be upsampled or downsampled, the area of A may be less than 1 (upsampling) or greater than 1 (downsampling)
+    Given that the image may be upsampled or downsampled, the domain A may have widths/heights less than 1 (upsampled) or more than 1 (downsampled) <br> <br>
+
+    If this project was to be done again, this module can likely be simplified a lot without sacrificing much functionality. 
+    This could include only allowing downsampling, or making the output image classification size 32x32 rather than 28x28 to
+    simplify some computations, or using a different resizing algo completely <br> <br>
 
 
-    <h2 class="subhead">Box Cofficent Update</h1>
-      This logic is used to generate static cofficents in the resizing pipeline. 
 
-      These coefficents will need to be updated when the input box coordanates change.
 
-      Update time will be much less than 1 frame. <br> <br>
 
-      These coefficents are calculated this way to reduce computations needed to be done in the pipeline and
-      avoid having to divide, which is a many cylce operation.
 
+
+
+
+
+
+
+
+    <h2 class="subhead" id="coefficients">Coefficient Update FSM</h2>
+      This logic is used to generate the dynamic coefficients used by the resizing pipeline. 
+
+      These coefficients need to be updated when the input box coordinates change.
+
+      Update time is much less than 1 frame. <br> <br>
+
+      These coefficients are calculated outside of the pipeline to reduce computations needed to be done in the pipeline and
+      avoid having to divide, which is a many cycle operation. <br> <br>
+
+
+      The coefficient FSM captures input coefficients, sequences the setup + capture of DSP/Divider hardware using these values, then updates
+      the signals going to the pipeline. 
+      It also synchronizes the updating of the coefficients with the end of the current frame, so they will 
+      take effect at the start of the next one. <br> <br>
+
+      High level diagram of this module:
       <p><img src="/imgs/resizing-coefficent-update-diagram.png" alt="img" width="50%" height="auto"></p>
 
+      Description of generated coefficients:
       <pre><code class="language-bash">
-topl[31:0] = { top_left_y[15:0], top_left_x[15:0] }     // coordanates of top-left corner to crop = (y1, x1)
-botr[31:0] = { bot_right_y[15:0], bot_right_x[15:0] }   // coordanates of bottom-right corner to crop = (y2, x2)
+topl[31:0] = { top_left_y[15:0], top_left_x[15:0] }     // coordinates of top-left corner to crop = (y1, x1)
+botr[31:0] = { bot_right_y[15:0], bot_right_x[15:0] }   // coordinates of bottom-right corner to crop = (y2, x2)
 
-width[23:0] = x2 - x1 + 1           // Width of the croped image. Fixed point 16b.8b value
-height[23:0] = y2 - y1 + 1          // Height of the croped image. Fixed point 16b.8b value
+width[23:0] = x2 - x1 + 1           // Width of the cropped image. Fixed-point 16b.8b value
+height[23:0] = y2 - y1 + 1          // Height of the cropped image. Fixed-point 16b.8b value
 
-dx[23:0] = width/28                 // How many source pixels map to one destination pixel. 16b.8b value. Used in horrizontal average filter.
+dx[23:0] = width/28                 // How many source pixels map to one destination pixel. 16b.8b value. Used in horizontal average filter.
                                     // Maximum value = 1280p/28 ~= 45.714, Minimum value = 1/28 ~= 0.03571
 dy[23:0] = height/28                // How many source pixels map to one destination pixel. 16b.8b value. Used in vertical average filter.
                                     // Maximum value = 720p/28 ~= 25.714, Minimum value = 1/28 ~= 0.03571
 
-factor_w = 28/width                 // How many destination pixels map to one source pixel. 16b.8b value. Used in horrizontal normalization
-factor_h = 28/width                 // How many destination pixels map to one source pixel. 16b.8b value. Used in vertical normalization
+factor_w = 28/width                 // How many destination pixels map to one source pixel. 16b.8b value. Used in horizontal normalization
+factor_h = 28/height                 // How many destination pixels map to one source pixel. 16b.8b value. Used in vertical normalization
       </code></pre>
       
-      The coefficent FSM will capture input coefficents, and sequence the setup + capture of these values thorugh the DSP/Divider hardaware. 
-      It will also synchornize the updating of the coefficents with the end of the current frame, so they will take effect at the start of the next one.
 
 
-  <h2 class="subhead">Core 7-Stage pipeline</h1>
 
-    <img src="/imgs/pipeline.png" alt="img" width="50%" height="auto"></p>
+
+
+
+
+
+
+
+
+
+  <h2 class="subhead" id="pipeline">Core 7-Stage Pipeline</h2>
+
+    <img src="/imgs/pipeline.png" alt="img" width="50%" height="auto">
     
     <!----------------------------------------------------------------------------------------------------------------------------------------------------------------->
-    <h3>1. Sub-image filter (Crop) </h1>
+    <h3>1. Sub-image filter (Crop) </h3>
       Only pass pixels which lie in the bounds of the given box.
       <p style="color: red;">
-      >> Latency impact: 0 // non used pixels are just skipped. <br>
+      >> Latency impact: 0 // unused pixels are just skipped. <br>
       >> Area impact: ~37 registers, minimal gates // State and counter logic <br>
       </p>
 
     <!----------------------------------------------------------------------------------------------------------------------------------------------------------------->
-    <h3>2. Luminance filter </h1>
-      Convert the RGB pixel value into brigtness value: 0.299*R + 0.587*G + 0.114*B
+    <h3>2. Luminance filter </h3>
+      Convert the RGB pixel value into brightness value: 0.299*R + 0.587*G + 0.114*B
       <p style="color: red;">
       >> Latency impact: 3 pclk cycles // 3 cycles given for 8-bit mult + add operation<br>
-      >> Area impact: ~50 registers from 3 gate implmented DSP units <br>
+      >> Area impact: ~50 registers from 3 DSP units imlpemented using logic gates<br>
       </p>
 
   <!----------------------------------------------------------------------------------------------------------------------------------------------------------------->
-  <h3> FIFO stage </h1>
+  <h3> FIFO stage </h3>
     Adding timing allowance for next stage. 64 Pixels/Bytes deep.
     <p style="color: red;">
     >> Latency impact: ~3 pclk cycles<br>
@@ -189,55 +238,63 @@ factor_h = 28/width                 // How many destination pixels map to one so
     </p>
 
   <!----------------------------------------------------------------------------------------------------------------------------------------------------------------->
-  <h3>3. Horrizontal Average Filter </h1>
-    Sum pixels in the horrizontal direction. Output 1 pixel for every "dx" input pixels. 
-    "dx" is a fixed point value that may be less than or greater than 1. So the sum may start + end at a fractional pixel value. <br> <br>
+  <h3>3. Horizontal Average Filter </h3>
+    Sum pixels in the horizontal direction. Output 1 pixel for every "dx" input pixels. 
+    "dx" is a fixed-point value that may be less than or greater than 1. So the sum may start + end at a fractional pixel value. <br> <br>
 
-    So for each input pixel: sum += pixel_value * overlap, where overlap is  between 0 and 1. <br> <br>
+    Features of this module include:
+    <ul>
+      <li>FSM to keep track of source + destination pixel domain left/right coordinates</li>
+      <li>Single running sum which is accumulated with a MAC/DSP unit. So for each input pixel:  sum += pixel_value * overlap, where overlap is  between 0 and 1. </li>
+      <li>Pixel sum outputs are passed on with hsync/vsync/valid signals. All sums are in 16b.8b fixed-point format.</li>
+    </ul>
 
-    Pixel output is a 16b.8b bit fixed point sum. <br> <br>
-    Max value is when dx = 1280p/28 * 255 ~= 11660 (down sampling 1280 pixel row into 28 pixel row) <br> <br>
-    Precision was choosen based on worst case scenarios like when dx = 1/28, and a pixel has a intensity of 0x1. in which case 
-    the output pixel here would be 0.035614, which can be captured as 0x9 in floating point format.
+    Note on precision:
+    <ul>
+      <li>Max value a counter may reach is when dx = 1280p/28, so max count = 1280p/28 * 255 ~= 11660 (downsampling 1280 pixel row into 28 pixel row). So need >= 14 integer bits.</li>
+      <li>Precision was chosen based on worst case scenarios like when dx = 1/28, and a pixel has an intensity of 0x1, in which case 
+    the output pixel here should be incremented by 0.035714, which would be represented as 0x9 with 8 fractional bits. i.e. pretty okay.</li>
+    </ul>
 
     <p style="color: red;">
-      >> Latency impact: From last pixel input, 2 pclk cycles. Worst case limitation due to througput per horrizontal pizel row = ~ 64 pclk cycles<br>
+      >> Latency impact: From last pixel input, 2 pclk cycles. Worst case limitation due to throughput per horizontal pixel row = ~ 64 pclk cycles<br>
       >> Area impact: ~286 registers <br>
     </p>
 
   <!----------------------------------------------------------------------------------------------------------------------------------------------------------------->
-  <h3>4. Normalizer 1</h1>
+  <h3>4. Normalizer 1</h3>
     Normalize the pixels. All pixels should be normalized by factor of "factor_w"=1/"dx". <br>
-    So if you added up "dx" pixels, you multiply by 1/"dx" to get the average.
+    So if you added up "dx" pixels, you multiply by 1/"dx" to get the average. i.e. 1 half of the integral shown at the top of this page.
     <p style="color: red;">
       >> Latency impact: ~4 pclk cycles<br>
       >> Area impact: ~ 1 DSP unit <br>
     </p>
 
   <!----------------------------------------------------------------------------------------------------------------------------------------------------------------->
-  <h3> FIFO stage </h1>
+  <h3> FIFO stage </h3>
     Adding timing allowance for next stage. 32 Pixels/Bytes deep
     <p style="color: red;">
-      >> Latency impact: Worst case ~32<br>
-      >> Area impact:  64 deep x 8-bits/pixel  <br>
+      >> Latency impact: Worst case ~32 pclk cycles<br>
+      >> Area impact:  32 deep x 8-bits/pixel  <br>
     </p>
   
   <!----------------------------------------------------------------------------------------------------------------------------------------------------------------->
-  <h3>5. Vertical Average Filter </h1>
+  <h3>5. Vertical Average Filter </h3>
     Sum pixels in the vertical direction. Output 1 pixel row for every "dy" input pixel rows. <br>
-    28 counters are maintained at the same time, Once a row is finished, all 28 pixels are output sequencially
-    and the next row is started. Fractional start/stop positioning is maintainted.    <br> <br>
+    28 counters are maintained at the same time. Once a row is finished, all 28 pixels are output sequentially
+    and the next row is started. Fractional start/stop positioning is maintained.    <br> <br>
     This is split into 3 main sub-modules:
     <ul>
-      <li>FSM for reading input pixels and tracking source + destination pixel coordanates.</li>
+      <li>FSM for reading input pixels and tracking source + destination pixel coordinates.</li>
       <li>Pixel buffer for 28 counters, along with a Multiply+Add DSP unit which all counters share.</li>
       <li>FSM for sending out finished counts.</li>
     </ul>
-    Otherwise operation is similar to horrizontal average filter. <br> <br>
-
-    For each pixel: sum += pixel_value * overlap, where overlap is  between 0 and 1. <br> <br>
-    Pixel outputs are int 16b.8b unsigned fixed-point format.  <br> <br>
-    vsync / valid signals are maintained. 
+    Otherwise operation is similar to horizontal average filter.
+    <ul>
+      <li>For each pixel: sum += pixel_value * overlap, where overlap is  between 0 and 1.</li>
+      <li>Pixel outputs are 16b.8b unsigned fixed-point format.</li>
+      <li>vsync / valid signals are maintained. </li>
+    </ul>
 
     <p style="color: red;">
       >> Latency impact: Worst case ~10 pclk cycles from when last pixel on a row is input, to when first of 28 pixels is output. 28 pclk cycles to output a row.<br>
@@ -245,18 +302,62 @@ factor_h = 28/width                 // How many destination pixels map to one so
     </p>
 
     <!------------------------------------------------------------------------------------------------------------------------------>
-  <h3>6. Normalizer 2</h1>
-    Normalize the the sums done in vertical average filter. All pixels should be normalized by factor of "factor_h"=1/"dy". <br>
-    Output of this block is a 8-bit pixel value, ready for use in KNN classification.
+  <h3>6. Normalizer 2</h3>
+    Normalize the sums done in vertical average filter. All pixels should be normalized by factor of "factor_h"=1/"dy". <br>
+    Output of this block is an 8-bit pixel value, ready for use in K-Means classification.
     <p style="color: red;">
       >> Latency impact: ~4 pclk cycles<br>
       >> Area impact: ~ 1 DSP unit <br>
     </p>
 
-  <h3>7. Stream to MM</h1>
-    Write the 28x28 pixel stream in a SRAM buffer. Then signal to K-Means block to start the classification.
+  <h3>7. Stream to MM</h3>
+    Write the 28x28 pixel stream into an SRAM buffer. Then signal to K-Means block to start the classification.
 
-    <!-- End class = content -->
-    </div>
+
+
+
+
+
+
+
+
+
+
+
+  <h2 class="subhead" id="verif">Verification Environment + Results</h2>
+  
+    This testbench reads a 1280x720p image from a memory file and generates an RGB video
+    stream to be provided to the DUT, repeating this image for every video frame.  <br><br>
+
+    At the same time, it reads a test vector file with a list of
+    x1/y1/x2/y2 coordinates to be provided to the DUT on each subsequent frame. 
+    Each time the box coordinates are changed, the internal coefficients will all be updated. And a new output image is generated. <br><br>
+  
+
+    The testbench will also capture every 28x28 output frame from the DUT and save it to a hex dump file for each sub-box input.
+    After the test, results can be verified visually. <br><br>
+
+    Using python scripts, the inputs/output can be converted between .hex + .png files. <br><br>
+    
+    If this project was done again, for more robust verification, support for many image files should be added, and results
+    can be compared against a python implementation (including some margin for error due to fixed-point quantization.) <br><br>
+
+
+    Example of testbench output: (from project report)
+    <p><img src="/resizing/imgs/resizing-verif-example.png" alt="img" width="20%" height="auto"></p>
+
+  <h2 class="subhead" id="fpga">FPGA Testing</h2>
+    See: <a class=goodlinks href="https://www.youtube.com/watch?v=L9q9B49reb8">Demo Video</a>
+
+  <h2 class="subhead" id="usage">Using the Git Repo</h2>
+    <pre><code class="language-bash">
+      git clone https://github.com/yiannis-cunning/ECE532_Project_KMeans
+      cd ECE532_Project_KMeans/hardware/dynamic_resizing_ip/
+      vivado dynamic_resizing_ip.xpr
+      # Generate IP output products + run sim via GUI.
+    </code></pre>
+
+  <!-- End class = content -->
+  </div>
 </body>
 </html>

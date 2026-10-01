@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Projects</title>
+    <link rel="stylesheet" href="../styles.css">
+    <!--<script defer src="./testpage.js"></script>-->
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-mml-chtml.js"></script>
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/verilog.min.js"></script>
+    <script>hljs.highlightAll();</script>
+</head>
+<body>
+
+    <script defer src="/navbar.js"></script>
+    <div class="navbar" id="nav-bar"></div>
+
+    <div class="content" id="maincontent">
+        
+        <h1 id="mini-regex" style="text-align: center;">RISC-V Processor</h1>
+
+        <h2 class="subhead">Links</h1>
+            <ul>
+                <li><a class=goodlinks href="https://github.com/yiannis-cunning/processor">Github repo</a></li>
+            </ul>
+        
+        <h2 class="subhead" >Info</h1>
+            This repo implements a RISC-V processor, specifically the unpriviledged RV32I Base integer instruction set. 
+            The core was tested on a Atrix-7 FPGA.
+            The repo also includes a testing environment to compile + run test programs, and compare ouptuts against a RISC ISA emulator 
+            and against x86 execution for logical results.
+
+            This project is still in progress. Below are current features of this repo:
+            <ul>
+                <li>6-Stage pipline implementing RV32I ISA (F-D-X-M1-M2-W)</li>
+                <li>Hazard detection but no forwarding yet</li>
+                <li>RISC emulator. To generate expected memory ouput, and for the future for expected memory traces for a given program. (DCCM reads/writes will be consistant using this architecture) </li>
+                <li>1 Instruction + 1 Data Local Memory Bus Port (LMB). Each requires 1 cycle read/write, </li>
+                <li>32KB ICCM, 32KB DCCM, both implemented using BRAM blocks. </li>
+                <li>Memoy mapped GPIO. Allowes for access to LEDs/Switches.</li>
+                <li>2 verification environments for multi-level verification. (1) cpu level to verifiy pipeline execution. (2) fpga/system level to verify memory + other external devices.</li>
+                <li>Timing closed at 100 MHz.</li>
+            </ul>
+
+        <h2 class="subhead" id="mini-regex">Usage</h1>
+            <p>
+                Setting up the repo:
+<pre><code class="language-bash">git clone https://github.com/yiannis-cunning/processor
+cd processor
+# Fix paths in setenvs.sh to point to vivado installation
+source setenvs.sh
+</code></pre>
+
+                RISC-V Simulator
+                <pre><code class="language-bash">./cpu/dv/risk_emulator/build/emulator memory_image.ihex PC_start_addr -o mem_dump_loc -n mem_dump_size</code></pre>
+                Compiling C test programs:
+                <ul>
+                    <li>Given some hardware starting PC address, desired stack address, ICCM/DCCM addresses </li>
+                    <li>Each .c test is compiled for the local computer architecture, and for RISC, RV32I arch.</li>
+                    <li>The test is run on the local machine to capture the 'good' results (DCCM dump) </li>
+                    <li>.ihex is dumped for the RISC executable. The emulator is run using this and the DCCM from this is also dumped as reference.</li>
+                    <li>hexdumps are saved of the RISC executable so it can be loaded in to SRAM banks in vivado simulations</li>
+                </ul>
+                <pre><code class="language-bash">python cpu/dv/scripts/compile_c_tests.py</code></pre>
+                Running CPU level tests:
+                <pre><code class="language-bash">python cpu/dv/scripts/compile_design.py --tests "main add jump" --out_dir ./ </code></pre>
+                Create Vivado project: (In current directory)
+                <pre><code class="language-bash">source fpga/design/make_ws.sh</code></pre>
+                Compile FPGA test programs/FW:
+                <pre><code class="language-bash">python fpga/dv/c_src/compile.py</code></pre>
+                Running FPGA level tests:
+                <pre><code class="language-bash">python cpu/dv/scripts/compile_design.py --tests "main add jump" --out_dir ./ </code></pre>
+            
+
+            </p>
+
+
+
+
+    </div>
+
+</body>
+</html>
